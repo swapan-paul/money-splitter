@@ -19,7 +19,7 @@
 
 .nav-link {
     font-size: 18px;
-    margin: 10px 0;
+    margin: -5px 0;
 }
 
 h5 {
@@ -75,3 +75,61 @@ h5 {
 .text-danger {
     color: red;
 }
+.group-s{
+    font-size: large;
+    color: rgb(6, 91, 194);
+    padding-left: 12px;
+}
+.text-d{
+    
+    color: rgb(7, 89, 98);
+}
+
+/* --------------------------------------------------------------------------------- */
+
+                /* Mobile view adjustments */
+                @media (max-width: 768px) {
+                    #sidebar {
+                        display: none;
+                    }
+        
+                    /* Bottom tabs for mobile */
+                    #mobileTabs {
+                        display: flex;
+                        position: fixed;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        background-color: #f8f9fa;
+                        box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
+                    }
+        
+                    #mobileTabs .nav-item {
+                        flex-grow: 1;
+                        text-align: center;
+                    }
+        
+                    .tab-content {
+                        margin-bottom: 60px;
+                        /* Ensure content doesn't overlap with the tabs */
+                    }
+                }
+        
+                /* Desktop view adjustments */
+                @media (min-width: 769px) {
+                    #sidebar {
+                        display: block;
+                    }
+        
+                    #mobileTabs {
+                        display: none;
+                    }
+        
+                    .tab-content {
+                        display: none;
+                    }
+                }
+        
+                .tab-pane {
+                    padding: 20px;
+                }

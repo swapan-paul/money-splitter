@@ -1,0 +1,19 @@
+/* Custom styling for modal and inputs */
+.payer-option {
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.multiple-payer-section {
+    padding-top: 10px;
+}
+
+.payer-input {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+.modal-body{
+    background-color: #70cfcf;
+}

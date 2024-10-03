@@ -1,5 +1,5 @@
  .modal-header {
-     background-color: #2dbb8c;
+     background-color: #333f63;
      color: white;
  }
 
@@ -52,6 +52,9 @@
      height: 70px;
  }
  .lable-style{
+    font-size: 20px;
+}
+.font-label{
     font-size: 20px;
  }
  

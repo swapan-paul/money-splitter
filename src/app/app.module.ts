@@ -15,6 +15,12 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { FileuploadComponent } from './component/fileupload/fileupload.component'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddExpenseModalComponent } from './component/add-expense-modal/add-expense-modal.component';
+import { AddEditGroupComponent } from './component/add-edit-group/add-edit-group.component';
+import { LoaderComponent } from './component/loader/loader.component';
+import { PayerModalComponent } from './component/payer-modal/payer-modal.component';
+import { DashboardViewComponent } from './component/dashboard-view/dashboard-view.component';
+import { GroupViewComponent } from './component/group-view/group-view.component';
+import { FriendViewComponent } from './component/friend-view/friend-view.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +31,13 @@ import { AddExpenseModalComponent } from './component/add-expense-modal/add-expe
     ForgotPasswordComponent,
     VarifyEmailComponent,
     FileuploadComponent,
-    AddExpenseModalComponent
+    AddExpenseModalComponent,
+    AddEditGroupComponent,
+    LoaderComponent,
+    PayerModalComponent,
+    DashboardViewComponent,
+    GroupViewComponent,
+    FriendViewComponent,
   ],
   imports: [
     BrowserModule,

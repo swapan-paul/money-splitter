@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Student } from 'src/app/model/student';
 import { AuthService } from 'src/app/shared/auth.service';
 import { DataService } from 'src/app/shared/data.service';
 import { AddExpenseModalComponent } from '../add-expense-modal/add-expense-modal.component';
+import { AddEditGroupComponent } from '../add-edit-group/add-edit-group.component';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -87,14 +89,28 @@ export class DashboardComponent implements OnInit {
   //   }
   // }
 
+
+  @ViewChild('actionModalTemplate') actionModalTemplate:any;
+  selectedGroup: any;
+  private modalRef!: NgbModalRef;
   expenses: any[] = [];
+  groups: any[] = [];
+  featureGroupsData: any[] = [];
+  allFriendsData: any[] = [];
+  selectedView: string = 'dashboard'; // Default to dashboard
+  selectedFriend: any = null;
+  mainTitle: string = 'Command';
+  mainIcon: string = 'fas fa-tachometer-alt';
 
-  constructor(private modalService: NgbModal) { }
+  viewIcons = {
+    dashboard: 'fas fa-tachometer-alt',
+    group: 'fas fa-users',
+    friend: 'fas fa-user'
+  };
 
+  constructor(private modalService: NgbModal,
+    private dataService: DataService,) { }
 
-  ngOnInit(): void {
-    
-  }
 
 
   groupTitle = 'Home Sweet Home';
@@ -108,8 +124,14 @@ export class DashboardComponent implements OnInit {
   ];
 
 
-  openModal() {
+  openExpensesModal() {
     const modalRef = this.modalService.open(AddExpenseModalComponent, { size: 'lg' });
+
+    // Correct way to pass selectedGroup to modal
+    if (this.selectedGroup) {
+      console.log('this.selectedGroup+++++++', this.selectedGroup);
+      modalRef.componentInstance.selectedGroup = this.selectedGroup;  // Pass the selectedGroup instance to the modal
+    }
 
     // When the modal closes, get the result (the expense) and add it to the list
     modalRef.result.then(
@@ -124,6 +146,99 @@ export class DashboardComponent implements OnInit {
       }
     );
   }
+
+
+  // Method to change the view based on user selection
+  selectView(view: string, data: any = null) {
+    this.selectedView = view;
+
+    if (view === 'group') {
+      this.selectedGroup = data;
+      this.mainTitle = data.groupTitle; // Just the title without "Group:"
+      this.mainIcon = this.viewIcons.group; // Set the corresponding icon
+    } else if (view === 'friend') {
+      this.selectedFriend = data;
+      this.mainTitle = data.memberName; // Just the name without "Friend:"
+      this.mainIcon = this.viewIcons.friend; // Set the corresponding icon
+    } else if (view === 'dashboard') {
+      this.mainTitle = 'Dashboard'; // Keep the original title
+      this.mainIcon = this.viewIcons.dashboard; // Set the corresponding icon
+    }
+  }
+
+
+
+
+  ngOnInit(): void {
+    this.dataService.getGroups().subscribe((groups:any) => {
+      this.featureGroupsData = groups || [];
+      console.log('Fetched Groups:', this.featureGroupsData);
+    });
+    this.dataService.getFriends().subscribe((groups:any) => {
+      this.allFriendsData = groups || [];
+      console.log('Fetched Groups:', this.featureGroupsData);
+    });
+  }
+
+
+
+  addGroup(selectedGroup?:any): void {
+
+    const modalRef = this.modalService.open(AddEditGroupComponent, {
+      centered: true,
+      scrollable: false,
+      backdrop: 'static',
+      keyboard: false,
+      windowClass: 'custom-modal'
+    });
+    const addGroupComponentInstance: AddEditGroupComponent = modalRef.componentInstance;
+    if (selectedGroup) {
+      addGroupComponentInstance.selectedGroup = selectedGroup;
+    }
+
+    modalRef.result.then((result: any) => {
+      if (result) {
+        // Handle success
+      } else {
+        // Handle cancel
+      }
+    });
+  }
+
+
+
+  // // Function to open the action modal
+  // openActionModal(group: any) {
+
+  //   console.log('group------------', group)
+  //   this.selectedGroup = group;  // Store the selected group
+  //   this.modalRef = this.modalService.open(this.actionModalTemplate, { centered: true, windowClass: 'custom-modal' }); // Open the modal
+  // }
+
+  // // Function to edit group
+  // editGroup() {
+  //   this.modalRef.close();  // Close the action modal
+  //   // You can now open another modal for editing, similar to how you handle group addition
+
+  //   this.addGroup(this.selectedGroup);
+  // }
+
+
+  // // Function to delete group
+  // deleteGroup() {
+  //   this.modalRef.close(); // Close the action modal
+  //   if (confirm('Are you sure you want to delete this group?')) {
+  //     this.dataService.deleteGroup(this.selectedGroup.id).subscribe(
+  //       response => {
+  //         console.log('Group deleted successfully');
+  //         // Refresh or update your list of groups after delete
+  //       },
+  //       error => {
+  //         console.error('Error while deleting group:', error);
+  //       }
+  //     );
+  //   }
+  // }
 }
 
 

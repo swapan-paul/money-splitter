@@ -8,7 +8,7 @@ import { RegisterComponent } from './component/register/register.component';
 import { VarifyEmailComponent } from './component/varify-email/varify-email.component';
 
 const routes: Routes = [
-   {path: '', redirectTo:'file-upload', pathMatch:'full'},
+  { path: '', redirectTo:'login', pathMatch:'full'},
   {path: 'login', component : LoginComponent},
   {path: 'dashboard', component : DashboardComponent},
   {path: 'register', component : RegisterComponent},

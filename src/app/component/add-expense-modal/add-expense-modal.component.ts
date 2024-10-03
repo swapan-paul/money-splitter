@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PayerModalComponent } from '../payer-modal/payer-modal.component';
 
 
 @Component({
@@ -64,11 +65,12 @@ export class AddExpenseModalComponent implements OnInit {
 //   }
 // }
 
-
+  @Input() selectedGroup: any; 
   expenseForm: FormGroup;
   imageSrc: any | null = null;
 
-  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder) {
+  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder,
+     private modalService: NgbModal) {
     this.expenseForm = this.fb.group({
       withYou: ['', Validators.required],
       description: ['', Validators.required],
@@ -78,8 +80,11 @@ export class AddExpenseModalComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    
+    console.log('selectedGroup----------', this.selectedGroup);
   }
+
+
+
 
   updateImage() {
     // Update imageSrc based on description
@@ -110,5 +115,22 @@ export class AddExpenseModalComponent implements OnInit {
       console.log(expenseData);
       // Handle saving the data
     }
+  }
+
+
+  // Open the payer modal
+  openPayerModal() {
+    const modalRef = this.modalService.open(PayerModalComponent, { size: 'lg' });
+    // modalRef.componentInstance.selectedPayers = this.selectedPayers;
+
+    // Get data back from the modal when it's closed
+    modalRef.result.then((result: any) => {
+      // if (result) {
+      //   this.selectedPayers = result;
+      //   this.expenseForm.patchValue({ payers: this.selectedPayers });
+      // }
+    }, (reason) => {
+      console.log('Dismissed');
+    });
   }
 }

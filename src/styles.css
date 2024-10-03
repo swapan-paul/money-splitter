@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+.custom-modal {
+    z-index: 1060 !important;
+    /* Adjust as needed */
+}
+
+.custom-modal .modal-backdrop {
+    z-index: 1050 !important;
+    /* Adjust as needed */
+}
