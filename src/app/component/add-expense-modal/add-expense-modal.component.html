@@ -1,0 +1,55 @@
+<div class="modal-header">
+    <h5 class="modal-title">Add an expense</h5>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form [formGroup]="expenseForm">
+        <div class="form-group d-flex justify-content-around align-content-around">
+            <label class="col-2 text-primary lable-style">With you and:</label>
+            <input type="text" class="form-control" formControlName="withYou" placeholder="Enter names or email addresses">
+        </div>
+
+        <div class="d-flex justify-content-around align-content-around">
+            <!-- Dynamic Image -->
+            <div class="col-md-2 image-preview">
+                <img [src]="imageSrc ? imageSrc : 'assets/logo/logo.png'" alt="Dynamic Image" class="img-fluid" />
+            </div>
+            <div class="col-md-10 form-group">
+                <label for="description">Enter a description</label>
+                <input type="text" class="form-control" formControlName="description" (input)="updateImage()" placeholder="Enter a description">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="text" class="form-control" formControlName="amount" placeholder="$0.00" style="font-size: 1.5em; font-weight: bold;">
+        </div>
+
+        <div class="form-group">
+            <label>Paid by you and split equally</label>
+            <p style="color: grey;">($0.00/person)</p>
+        </div>
+
+        <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" class="form-control" formControlName="date">
+        </div>
+
+        <div class="form-group">
+            <label>Add image/notes</label>
+            <button type="button" class="btn btn-outline-secondary">Add image/notes</button>
+        </div>
+
+        <div class="form-group">
+            <label>No group</label>
+            <button type="button" class="btn btn-outline-secondary">No group</button>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="saveExpense()">Save</button>
+</div>

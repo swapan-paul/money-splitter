@@ -1,0 +1,77 @@
+/* Sidebar Styling */
+#sidebar {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-right: 1px solid #ddd;
+}
+
+.splitwise-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4caf50;
+    margin-bottom: 30px;
+}
+
+.nav-link {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+h5 {
+    color: #4caf50;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.invite-friends h6 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* Main Content */
+.expenses-list {
+    margin-top: 20px;
+}
+
+.expense-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.expense-item h5 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.expense-item p {
+    font-size: 14px;
+    color: #777;
+}
+
+/* Right Sidebar - Group Balances */
+.group-balances {
+    padding: 20px;
+    border-left: 1px solid #ddd;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #f7f7f7;
+}
+
+.balance-item p {
+    font-size: 16px;
+}
+
+.text-success {
+    color: green;
+}
+
+.text-danger {
+    color: red;
+}

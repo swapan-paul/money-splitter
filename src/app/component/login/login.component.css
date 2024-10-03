@@ -1,0 +1,105 @@
+Full-screen background image html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: url('../../../assets/logo/logo.png') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(44 79 64 / 79%);
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+/* Login form container */
+.login-container {
+    position: relative;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Semi-transparent white background */
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    /* Soft shadow for card effect */
+    text-align: center;
+
+}
+
+/* Logo styling */
+.login-logo img {
+    width: 80px;
+    margin-bottom: 20px;
+}
+
+/* Header styling */
+h3 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+/* Input styling */
+input.form-control {
+    padding: 1rem;
+    border-radius: 30px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+}
+
+input.form-control:focus {
+    border-color: #007bff;
+    box-shadow: none;
+}
+
+/* Submit button */
+button {
+    padding: 1rem;
+    border-radius: 30px;
+    width: 100%;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Text link styling */
+.text-center a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.text-center a:hover {
+    color: #0056b3;
+}
+
+@media (max-width: 576px) {
+    .login-container {
+        padding: 1.5rem;
+    }
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
