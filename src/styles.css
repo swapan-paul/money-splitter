@@ -8,3 +8,87 @@
     z-index: 1050 !important;
     /* Adjust as needed */
 }
+
+
+ng-dropdown-panel .scroll-host {
+    overflow: hidden;
+    overflow-y: auto;
+    position: relative;
+    background-color: mediumturquoise !important;
+    display: block;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
+    background-color: lavender;
+    white-space: nowrap;
+    margin-left: 13px;
+    padding: 0px 14px;
+    border: 19px;
+} */
+
+
+.ng-select.ng-select-multiple .ng-select-container {
+    border-radius: 0px;
+    /* Rounded corners for capsule effect */
+    background-color: lavender;
+    /* Background color for the container */
+    border: 1px solid #ccc;
+    /* Optional: add a border for better visibility */
+    padding: 5px;
+    /* Adjust padding for spacing */
+}
+
+.ng-select.ng-select-multiple .ng-select-container .ng-value-container {
+    display: flex;
+    /* Align items horizontally */
+    flex-wrap: wrap;
+    /* Allow multiple items to wrap */
+}
+
+.ng-select.ng-select-multiple .ng-select-container .ng-value {
+    background-color: #fff;
+    /* White background for selected values */
+    color: #333;
+    /* Text color */
+    border-radius: 20px;
+    /* Rounded corners for each selected item */
+    padding: 5px 10px;
+    /* Padding around selected values */
+    margin: 5px;
+    /* Spacing between selected items */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow for depth */
+    font-size: 14px;
+    /* Font size */
+}
+
+.ng-select.ng-select-multiple .ng-select-container .ng-value .ng-value-icon {
+    /* display: none; */
+    /* Hide the icon if not needed */
+}
+
+.ng-select .ng-select-container .ng-placeholder {
+    color: #999;
+    /* Placeholder color */
+    font-style: italic;
+    /* Italicize the placeholder */
+}
+
+.ng-select {
+    position: relative;
+    /* display: block;
+    box-sizing: border-box; */
+    border: antiquewhite;
+}
+
+.ng-select div,
+.ng-select input,
+.ng-select span {
+    box-sizing: border-box;
+        padding: 4px;
+        font-size: large;
+}
+
+
+

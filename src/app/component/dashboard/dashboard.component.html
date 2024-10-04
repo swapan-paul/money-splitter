@@ -5,9 +5,9 @@
                 <h2 class="splitwise-logo">Money Splitter</h2>
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#" (click)="selectView('dashboard')">
-                            Dashboard
-                        </a>
+                        <span class="active" (click)="selectView('dashboard')" style="cursor: pointer;">
+                            <h5 class="mt-4">DASHBOARD</h5>
+                        </span>
                     </li>
 
                 </ul>
@@ -20,7 +20,7 @@
 
                 <ul class="nav flex-column">
                     <li class="nav-item" *ngFor="let group of featureGroupsData">
-                        <span class="group-s" (click)="selectView('group', group)">
+                        <span class="group-s" (click)="selectView('group', group)" style="cursor: pointer;">
                             <i class="fas fa-users"></i> {{ group.groupTitle }}
                         </span>
                     </li>
@@ -29,7 +29,7 @@
                 <h5 class="mt-4">FRIENDS</h5>
                 <ul class="nav flex-column">
                     <li class="nav-item" *ngFor="let friend of allFriendsData">
-                        <span class="group-s" (click)="selectView('friend', friend)">
+                        <span class="group-s" (click)="selectView('friend', friend)" style="cursor: pointer;">
                             <i class="fas fa-user"></i> {{ friend.memberName }}
                         </span>
                     </li>
@@ -43,7 +43,7 @@
 
             <!-- Display child components based on selection -->
             <app-dashboard-view *ngIf="selectedView === 'dashboard'">
-                <div class="d-flex justify-content-between align-items-center border-bottom">
+                <div class="mt-4 d-flex justify-content-between align-items-center border-bottom">
                     <h1 class="h2 text-d">
                         <i [ngClass]="mainIcon" class="me-2 text-bg-success "></i>
                         {{ mainTitle }}
@@ -57,8 +57,11 @@
             </app-dashboard-view>
 
 
-            <app-group-view *ngIf="selectedView === 'group'" [group]="selectedGroup">
-                <div class="d-flex justify-content-between align-items-center border-bottom">
+            <app-group-view *ngIf="selectedView === 'group'" 
+               [group]="selectedGroup"
+               [allExpenseDataByGroupId]="allExpenseDataByGroupId"
+            >
+                <div class="mt-4 d-flex justify-content-between align-items-center border-bottom">
                     <h1 class="h2 text-d">
                         <i [ngClass]="mainIcon" class="me-2 text-bg-success "></i>
                         {{ mainTitle }}
@@ -73,7 +76,7 @@
 
 
             <app-friend-view *ngIf="selectedView === 'friend'" [friend]="selectedFriend">
-                <div class="d-flex justify-content-between align-items-center border-bottom">
+                <div class="mt-4 d-flex justify-content-between align-items-center border-bottom">
                     <h1 class="h2 text-d">
                         <i [ngClass]="mainIcon" class="me-2 text-bg-success "></i>
                         {{ mainTitle }}
@@ -102,6 +105,10 @@
         <li class="nav-item flex-fill" role="presentation">
             <a class="nav-link" id="friends-tab" data-bs-toggle="tab" href="#friends" role="tab" aria-controls="friends"
                 aria-selected="false">Friends</a>
+        </li>
+        <li class="nav-item flex-fill" role="presentation">
+            <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+                aria-selected="false">Profile</a>
         </li>
     </ul>
 </div>
@@ -152,6 +159,21 @@
                         <!-- Font Awesome icon -->
                         <i class="fas fa-user"></i> <!-- Adjust icon here -->
                         {{ friendsData.memberName }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="Profile" role="tabpanel" aria-labelledby="Profile-tab">
+        <!-- Friends Content for Mobile -->
+        <div class="container">
+            <h5 class="mt-4">Profile</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item" *ngFor="let ProfileData of allFriendsData">
+                    <a class="nav-link" href="#">
+                        <!-- Font Awesome icon -->
+                        <i class="fas fa-person-rifle"></i> <!-- Adjust icon here -->
+                        <!-- {{ profileData.memberName }} -->
                     </a>
                 </li>
             </ul>

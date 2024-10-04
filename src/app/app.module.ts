@@ -21,6 +21,8 @@ import { PayerModalComponent } from './component/payer-modal/payer-modal.compone
 import { DashboardViewComponent } from './component/dashboard-view/dashboard-view.component';
 import { GroupViewComponent } from './component/group-view/group-view.component';
 import { FriendViewComponent } from './component/friend-view/friend-view.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { ConfirmationModalComponent } from './component/confirmation-modal/confirmation-modal.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,7 @@ import { FriendViewComponent } from './component/friend-view/friend-view.compone
     DashboardViewComponent,
     GroupViewComponent,
     FriendViewComponent,
+    ConfirmationModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +49,7 @@ import { FriendViewComponent } from './component/friend-view/friend-view.compone
     FormsModule,
     ReactiveFormsModule,
     FormsModule,
+    NgSelectModule,
     NgbModule
   ],  
   providers: [],

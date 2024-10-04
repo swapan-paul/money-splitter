@@ -97,6 +97,8 @@ export class DashboardComponent implements OnInit {
   groups: any[] = [];
   featureGroupsData: any[] = [];
   allFriendsData: any[] = [];
+  allExpenseData: any[] = [];
+  allExpenseDataByGroupId: any[] = [];
   selectedView: string = 'dashboard'; // Default to dashboard
   selectedFriend: any = null;
   mainTitle: string = 'Command';
@@ -110,6 +112,23 @@ export class DashboardComponent implements OnInit {
 
   constructor(private modalService: NgbModal,
     private dataService: DataService,) { }
+
+
+
+  ngOnInit(): void {
+    this.dataService.getGroups().subscribe((groups: any) => {
+      this.featureGroupsData = groups || [];
+      console.log('Fetched Groups:', this.featureGroupsData);
+    });
+    this.dataService.getFriends().subscribe((friends: any) => {
+      this.allFriendsData = friends || [];
+      console.log('All friends:', this.featureGroupsData);
+    });
+    this.dataService.getExpenses().subscribe((expense: any) => {
+      this.allExpenseData = expense || [];
+      console.log(' allExpenseData:', this.allExpenseData);
+    });
+  }
 
 
 
@@ -152,7 +171,13 @@ export class DashboardComponent implements OnInit {
   selectView(view: string, data: any = null) {
     this.selectedView = view;
 
+    
     if (view === 'group') {
+      this.dataService.getExpensesByGroupId(data.groupId).subscribe((expense: any) => {
+        this.allExpenseDataByGroupId = expense || [];
+        console.log(' allExpenseDataById:@@@@@@@@', this.allExpenseDataByGroupId);
+      });
+
       this.selectedGroup = data;
       this.mainTitle = data.groupTitle; // Just the title without "Group:"
       this.mainIcon = this.viewIcons.group; // Set the corresponding icon
@@ -167,18 +192,6 @@ export class DashboardComponent implements OnInit {
   }
 
 
-
-
-  ngOnInit(): void {
-    this.dataService.getGroups().subscribe((groups:any) => {
-      this.featureGroupsData = groups || [];
-      console.log('Fetched Groups:', this.featureGroupsData);
-    });
-    this.dataService.getFriends().subscribe((groups:any) => {
-      this.allFriendsData = groups || [];
-      console.log('Fetched Groups:', this.featureGroupsData);
-    });
-  }
 
 
 

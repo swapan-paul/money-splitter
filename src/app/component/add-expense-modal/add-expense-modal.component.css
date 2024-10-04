@@ -13,7 +13,8 @@
  }
 
  .modal-body {
-     padding: 20px;
+    padding: 28px;
+     margin-top: 11px;
  }
 
  .form-group {
@@ -57,4 +58,21 @@
 .font-label{
     font-size: 20px;
  }
+ ng-dropdown-panel .scroll-host {
+     overflow: hidden;
+     overflow-y: auto;
+     position: relative;
+     background-color: mediumturquoise !important;
+     display: block;
+     -webkit-overflow-scrolling: touch;
+ }
+
+
+
+
+
+
+
+ 
+ 
  

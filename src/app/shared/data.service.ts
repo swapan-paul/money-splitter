@@ -3,8 +3,8 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 // import { FileMetaData } from '../model/file-meta-data';
 // import { Student } from '../model/student';
-import { from, Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { from, Observable, throwError } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -195,7 +195,8 @@ export class DataService {
   // Method to update the group with members including IDs
   updateGroupMembers(groupId: string, updatedMembers: any[]) {
     this.db.collection('Groups').doc(groupId).update({
-      members: updatedMembers  // Update the group document with the new members array containing member IDs
+      members: updatedMembers ,
+      groupId: groupId // Update the group document with the new members array containing member IDs
     })
       .then(() => {
         console.log('Group members updated with IDs');
@@ -219,4 +220,82 @@ export class DataService {
   }
 
     
+
+
+// --------------------------Expenses---------------------------------------------------------------------------
+
+
+addExpense(expenseData: any): Observable < any > {
+  console.log('groupData------', expenseData);
+  return new Observable(observer => {
+    // Add server timestamp and any other metadata
+    const expensesPayload = {
+      ...expenseData,
+      createdAt: new Date() // Replace with serverTimestamp() if you prefer Firestore's server timestamp
+    };
+
+    // Add the group to the 'groups' collection
+    this.db.collection('Expenses').add(expensesPayload)
+      .then(docRef => {
+        console.log('Expenses added successfully with ID:', docRef.id);
+        observer.next({
+          status: 200,
+          message: 'Expenses added successfully',
+          id: docRef.id,
+          data: expenseData
+        });
+        observer.complete();
+      })
+      .catch(error => {
+        console.error('Error adding expenses:', error);
+        observer.error({
+          status: 400,
+          message: 'Error adding expenses',
+          error: error
+        });
+      });
+  });
+}
+
+  public getExpenses(): Observable<any[]> {
+    return this.db.collection('Expenses')
+      .snapshotChanges()
+      .pipe(
+        map(actions => actions.map(a => {
+          const data = a.payload.doc.data();
+          const id = a.payload.doc.id;
+          return { id, ...(typeof data === 'object' && data !== null ? data : {}) };
+        }))
+      );
+  }
+
+
+
+  public getExpensesByGroupId(groupId: any): Observable<any[]> {
+
+    console.log('groupId******', groupId);
+    return this.db.collection('Expenses', ref => ref.where('groupId', '==', groupId))
+      .snapshotChanges()
+      .pipe(
+        map(actions => {
+          return actions.map(action => {
+            const data = action.payload.doc.data();
+            const id = action.payload.doc.id;
+            return { id, ...(data as object) };
+          });
+        }),
+        catchError(error => {
+          console.error('Error fetching expenses by groupId:', error);
+          return throwError(error);  // Handle errors here
+        })
+      );
+  }
+
+
+  deleteExpenseById(expenseId: string): Observable<void> {
+    const deletePromise = this.db.collection('Expenses').doc(expenseId).delete();
+    return from(deletePromise); // Convert Promise to Observable
+  }
+
+
 }

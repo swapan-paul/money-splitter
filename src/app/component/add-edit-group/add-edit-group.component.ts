@@ -30,6 +30,8 @@ export class AddEditGroupComponent implements OnInit {
 
     this.groupForm = this.fb.group({
       groupTitle: [this.selectedGroup?.groupTitle || '', Validators.required],
+      groupCreatedBy: ['swapan', Validators.required],
+      groupCreaterUid: ['hgfgrhbfgghbheghb7bfv', Validators.required],
       groupType: [this.selectedGroup?.groupType || '', Validators.required],
       members: this.fb.array([]),
     });
@@ -87,39 +89,39 @@ export class AddEditGroupComponent implements OnInit {
     this.activeModal.dismiss();
   }
 
-  editGroup() {
-    console.log('this.groupForm--------->>', this.groupForm.value);
+  // editGroup() {
+  //   console.log('this.groupForm--------->>', this.groupForm.value);
 
-    const isFormChanged = this.isFormEdited();
+  //   const isFormChanged = this.isFormEdited();
 
-    if (this.groupForm.valid && isFormChanged) {
-      const uploadObservables: any[] = [];
+  //   if (this.groupForm.valid && isFormChanged) {
+  //     const uploadObservables: any[] = [];
 
-      this.loaderService.show();
+  //     this.loaderService.show();
 
-          const members = this.members.value.map((tech: any) => tech.memberName);
-          const formData = {
-            ...this.groupForm.value,
-            members,
-          };
+  //         const members = this.members.value.map((tech: any) => tech.memberName);
+  //         const formData = {
+  //           ...this.groupForm.value,
+  //           members,
+  //         };
 
-          console.log('formData--------->>', formData);
+  //         console.log('formData--------->>', formData);
 
-          this.dataService.updateGroup(this.selectedGroup.id, formData).then(
-            () => console.log('Group updated successfully'),
-            (error:any) => console.error('Error while updating Group:', error)
-          );
-          this.loaderService.hide();
+  //         this.dataService.updateGroup(this.selectedGroup.id, formData).then(
+  //           () => console.log('Group updated successfully'),
+  //           (error:any) => console.error('Error while updating Group:', error)
+  //         );
+  //         this.loaderService.hide();
 
-          this.closeModal();
+  //         this.closeModal();
         
 
-        this.loaderService.hide();
-      }
-     else {
-      console.log('No changes detected or form is invalid');
-    }
-  }
+  //       this.loaderService.hide();
+  //     }
+  //    else {
+  //     console.log('No changes detected or form is invalid');
+  //   }
+  // }
   
 
 

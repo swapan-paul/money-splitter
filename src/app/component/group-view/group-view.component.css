@@ -1,4 +1,48 @@
 .text-d {
-
     color: rgb(7, 89, 98);
+}
+
+.expense-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
+
+.accordion-header .expense-title {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.accordion-header .text-end .fw-bold {
+    color: #333;
+}
+
+.accordion-item {
+    border: none;
+}
+
+.accordion-button {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 0.5rem 1rem;
+}
+
+.accordion-button.collapsed {
+    color: #007bff;
+}
+
+.accordion-header .text-end .text-muted {
+    font-size: 0.85rem;
+    color: #6c757d;
+    /* This will give it a muted color */
+}
+
+.accordion-header .btn-danger {
+    border: none;
+    /* Remove border for a cleaner look */
+}
+
+.accordion-header .btn-danger:hover {
+    background-color: #c82333;
+    /* Darker red on hover */
 }
