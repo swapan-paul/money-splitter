@@ -1,58 +1,10 @@
-<!-- 
-
-<div class="container mt-4">
-    <div class="accordion" id="expenseAccordion">
-        <div class="accordion-item" *ngFor="let expense of allExpenseData; let i = index">
-            <h2 class="accordion-header" id="heading{{i}}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#collapse' + i" aria-expanded="true" aria-controls="collapse{{i}}">
-                    {{ expense.description }} - INR {{ expense.amount }} - {{ expense.date }}
-                </button>
-            </h2>
-
-            <div [id]="'collapse' + i" class="accordion-collapse collapse" [ngClass]="{'show': i === 0}"
-                aria-labelledby="heading{{i}}" data-bs-parent="#expenseAccordion">
-                <div class="accordion-body">
-                    <h5>{{ expense.description }} Expense</h5>
-                    <img [src]="expense.expenseIcon" alt="{{ expense.description }} Icon" class="img-fluid" />
-                    <p>Amount: INR {{ expense.amount }}</p>
-                    <p><strong>Group:</strong> {{ expense.groupTitle }} (Created by: {{ expense.groupCreatedBy }})</p>
-
-                    <h6>Payers</h6>
-                    <ul>
-                        <li *ngFor="let payer of expense.payersData">
-                            {{ payer.memberName }} paid INR {{ payer.amount }}
-                            <span *ngIf="payer.groupCreater">(Group Creator)</span>
-                        </li>
-                    </ul>
-
-                    <h6>With You</h6>
-                    <ul>
-                        <li *ngFor="let withYou of expense.withYou">
-                            {{ getMemberNameById(withYou) }}
-                        </li>
-                    </ul>
-
-                    <h6>Notes</h6>
-                    <p>{{ expense.notes || 'No notes added' }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->
-
 <ng-content></ng-content>
 
 
 <div class="container mt-4">
     <div class="accordion" id="expenseAccordion">
-        <div class="accordion-item" *ngFor="let expense of allExpenseDataByGroupId; let i = index">
-            <!-- <h2 class="accordion-header" id="heading{{i}}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#collapse' + i" aria-expanded="false" [attr.aria-controls]="'collapse' + i">
-                    {{ expense.description }} - INR {{ expense.amount }} - {{ expense.date }}
-                </button>
-            </h2> -->
+        <div class="accordion-item" *ngFor="let expense of ExpenseData; let i = index">
+          
     <h2 class="accordion-header" id="heading{{i}}">
         <button class="accordion-button collapsed d-flex justify-content-between align-items-center" type="button"
             data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i" aria-expanded="false"
@@ -70,71 +22,43 @@
                 <div class="fw-bold">{{ expense.amount | currency: 'INR' }}</div>
                 <small class="text-muted">{{ getPayerDetails(expense) }}</small>
             </div>
+            <div class="text-end ms-auto">
+                <div class="fw-bold">{{ expense.amount | currency: 'INR' }}</div>
+                <small class="text-muted">{{ getPayerDetails(expense) }}</small>
+            </div>
     
             <!-- Delete Icon -->
-            <button type="button" class="btn btn-danger btn-sm ms-3" (click)="deleteExpense(expense.id)">
-                <i class="fas fa-trash"></i> <!-- Font Awesome Trash Icon -->
-            </button>
+            <!-- <button type="button" class="btn btn-danger btn-sm ms-3" (click)="deleteExpense(expense.id)">
+                <i class="fas fa-trash"></i>
+            </button> -->
         </button>
     </h2>
 
 
-            <!-- <div [id]="'collapse' + i" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading' + i"
-                data-bs-parent="#expenseAccordion">
-                <div class="accordion-body">
-                    <h5>{{ expense.description }} Expense</h5>
-                    <img [src]="expense.expenseIcon" alt="{{ expense.description }} Icon" class="img-fluid" />
-                    <p>Amount: INR {{ expense.amount }}</p>
-                    <p><strong>Group:</strong> {{ expense.groupTitle }} (Created by: {{ expense.groupCreatedBy }})</p>
-
-                    <h6>Payers</h6>
-                    <ul>
-                        <li *ngFor="let payer of expense.payersData">
-                            {{ payer.memberName }} paid INR {{ payer.amount }}
-                            <span *ngIf="payer.groupCreater">(Group Creator)</span>
-                        </li>
-                    </ul>
-
-                    <h6>With You</h6>
-                    <ul>
-                        <li *ngFor="let withYou of expense.withYou">
-                            {{ getMemberNameById(withYou) }}
-                        </li>
-                    </ul>
-
-                    <h6>Notes</h6>
-                    <p>{{ expense.notes || 'No notes added' }}</p>
-                </div>
-            </div> -->
 
             <div [id]="'collapse' + i" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading' + i"
                 data-bs-parent="#expenseAccordion">
                 <div class="accordion-body">
                     <h5>{{ expense.description }} Expense</h5>
                     <img [src]="expense.expenseIcon" alt="{{ expense.description }} Icon" class="img-fluid" />
-                    <p>Amount: INR {{ expense.amount }}</p>
-                    <p><strong>Group:</strong> {{ expense.groupTitle }} (Created by: {{ expense.groupCreatedBy }})</p>
+                    <p><strong>Group:</strong> {{ expense.groupTitle }}</p>
             
-                    <h6>Payers</h6>
-                    <ul>
-                        <li *ngFor="let payer of expense.payersData">
-                            {{ payer.memberName }} paid INR {{ payer.amount }}
-                            <span *ngIf="payer.groupCreater">(Group Creator)</span>
-                        </li>
-                    </ul>
+                 
             
-                    <h6>With You</h6>
-                    <ul>
-                        <li *ngFor="let withYou of expense.withYou">
-                            {{ getMemberNameById(withYou) }}
-                        </li>
-                    </ul>
-            
-                    <h6>Notes</h6>
-                    <p>{{ expense.notes || 'No notes added' }}</p>
+                    <div *ngIf="expense">
+                        <h2>Expense Details</h2>
+                        <p><strong>Total Amount:</strong> {{ expense.amount }}</p>
+                    
+                        <div class="expense-balances">
+                            <p *ngFor="let memberId of getMemberIds(expense.calculatedBalances)">
+                                {{ getBalanceText(memberId, expense.calculatedBalances, expense.payersData) }}
+                            </p>
+                        </div>
+                    </div>
+
             
                     <!-- Edit Button -->
-                    <button (click)="openEditModal(expense.id)" class="btn btn-primary mt-2">Edit</button>
+                    <!-- <button (click)="openEditModal(expense.id)" class="btn btn-primary mt-2">Edit</button> -->
                 </div>
             </div>
 

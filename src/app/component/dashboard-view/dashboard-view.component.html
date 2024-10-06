@@ -1,2 +1,74 @@
+<!-- <ng-content></ng-content>
+<div class="container mt-4">
+    <div class="accordion" id="expenseAccordion">
+        <div class="accordion-item" *ngFor="let group of allGroup; let i = index">
+            <h2 class="accordion-header" id="heading{{i}}">
+                <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
+                    type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i"
+                    aria-expanded="false" [attr.aria-controls]="'collapse' + i"
+                    (click)="fetchAndCalculateGroupBalances(group.groupId)">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <div class="expense-title fw-bold">{{ group.groupTitle || 'Group ' + (i + 1) }}</div>
+                            <small class="text-muted">Group {{ i + 1 }}</small>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+
+            <div [id]="'collapse' + i" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading' + i"
+                data-bs-parent="#expenseAccordion">
+                <div class="accordion-body">
+                    <h6>Balance Details:</h6>
+                    <ul *ngIf="totalBalances[group.groupId]; else noBalanceMessage">
+                        <li *ngFor="let balance of displayBalancesForGroup(group.groupId)">
+                            {{ balance }}
+                        </li>
+                    </ul>
+                    <ng-template #noBalanceMessage>
+                        <p class="text-muted">No balance details available for this group.</p>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
 <ng-content></ng-content>
-<p>dashboard-view works!</p>
+<div class="container mt-4">
+    <div class="accordion" id="expenseAccordion">
+        <div class="accordion-item" *ngFor="let group of allGroup; let i = index">
+            <h2 class="accordion-header" id="heading{{i}}">
+                <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
+                    type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i"
+                    aria-expanded="false" [attr.aria-controls]="'collapse' + i"
+                    (click)="fetchAndCalculateGroupBalances(group.groupId)">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <div class="expense-title fw-bold">{{ group.groupTitle || 'Group ' + (i + 1) }}</div>
+                            <small class="text-muted">Group {{ i + 1 }}</small>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+
+            <div [id]="'collapse' + i" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading' + i"
+                data-bs-parent="#expenseAccordion">
+                <div class="accordion-body">
+                    <h6>Balance Details:</h6>
+                    <ul *ngIf="totalBalances[group.groupId]; else noBalanceMessage">
+                        <li *ngFor="let balance of displayBalancesForGroup(group.groupId)">
+                            {{ balance }}
+                        </li>
+                    </ul>
+
+
+                    <ng-template #noBalanceMessage>
+                        <p class="text-muted">No balance details available for this group.</p>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

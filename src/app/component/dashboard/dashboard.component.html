@@ -17,6 +17,7 @@
                     <h5 class="mt-4">GROUPS</h5>
                     <button type="button" class="btn text-success btn-sm" (click)="addGroup()">+Group</button>
                 </div>
+                
 
                 <ul class="nav flex-column">
                     <li class="nav-item" *ngFor="let group of featureGroupsData">
@@ -42,7 +43,9 @@
             
 
             <!-- Display child components based on selection -->
-            <app-dashboard-view *ngIf="selectedView === 'dashboard'">
+            <app-dashboard-view *ngIf="selectedView === 'dashboard'"
+            [allGroup] = "featureGroupsData"
+            >
                 <div class="mt-4 d-flex justify-content-between align-items-center border-bottom">
                     <h1 class="h2 text-d">
                         <i [ngClass]="mainIcon" class="me-2 text-bg-success "></i>
@@ -58,8 +61,7 @@
 
 
             <app-group-view *ngIf="selectedView === 'group'" 
-               [group]="selectedGroup"
-               [allExpenseDataByGroupId]="allExpenseDataByGroupId"
+               [ExpenseData]="allExpenseDataByGroupId"
             >
                 <div class="mt-4 d-flex justify-content-between align-items-center border-bottom">
                     <h1 class="h2 text-d">
@@ -70,6 +72,9 @@
                         <button type="button" class="btn btn-primary" (click)="openExpensesModal()">Add an expense</button>
                         <button class="btn btn-danger">Settle up</button>
                     </div>
+
+                    
+                    
                 </div>
             </app-group-view>
             

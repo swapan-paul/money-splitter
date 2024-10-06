@@ -1,4 +1,164 @@
-.text-d {
-
+/* .text-d {
     color: rgb(7, 89, 98);
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: auto;
+}
+
+.balance-summary {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+}
+
+.total-balance,
+.you-owe,
+.you-are-owed {
+    text-align: center;
+}
+
+.positive {
+    color: green;
+}
+
+.negative {
+    color: red;
+}
+
+.balance-note {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin: 10px 0;
+}
+
+.balance-details {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.balance-section {
+    width: 45%;
+}
+
+.balance-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.balance-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.member-name {
+    font-weight: bold;
+}
+
+.amount-owe {
+    margin-top: 5px;
+}
+
+.sub-details {
+    list-style-type: circle;
+    padding-left: 20px;
+    font-size: 0.9rem;
+}
+
+.view-options {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+button.active {
+    background-color: #ddd;
+}
+
+ */
+.accordion-button {
+    font-size: 1.1rem;
+    /* Increase font size for better readability */
+    background-color: #f8f9fa;
+    /* Light background for buttons */
+    color: #212529;
+    /* Dark text color for contrast */
+    border: 1px solid #ced4da;
+    /* Border for better separation */
+}
+
+.accordion-button:hover {
+    background-color: #e2e6ea;
+    /* Darken the background on hover */
+}
+
+.accordion-body {
+    background-color: #fff;
+    /* White background for the body */
+    font-size: 0.95rem;
+    /* Slightly smaller font size for body text */
+}
+
+h6 {
+    margin-top: 1rem;
+    /* Add margin to headers */
+}
+
+.text-success {
+    font-weight: bold;
+    /* Bold font for amounts owed */
+}
+
+.text-danger {
+    font-weight: bold;
+    /* Bold font for amounts owed */
+}
+
+/* Add responsive styles if needed */
+@media (max-width: 768px) {
+    .accordion-button {
+        font-size: 1rem;
+        /* Adjust font size for smaller screens */
+    }
+}
+
+.balance-text {
+    font-weight: bold;
+    color: #343a40;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.text-success {
+    color: #28a745;
+}
+
+.accordion-button {
+    font-size: 1.1rem;
+}
+
+.accordion-body {
+    font-size: 0.95rem;
+}
+
+.expense-title {
+    font-size: 1.2rem;
 }

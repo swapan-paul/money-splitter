@@ -14,82 +14,6 @@ import { AddEditGroupComponent } from '../add-edit-group/add-edit-group.componen
 })
 export class DashboardComponent implements OnInit {
 
-  // studentsList: Student[] = [];
-  // studentObj: Student = {
-  //   id: '',
-  //   first_name: '',
-  //   last_name: '',
-  //   email: '',
-  //   mobile: ''
-  // };
-  // id: string = '';
-  // first_name: string = '';
-  // last_name: string = '';
-  // email: string = '';
-  // mobile: string = '';
-
-  // constructor(private auth: AuthService, private data: DataService) { }
-
-  // ngOnInit(): void {
-  //   this.getAllStudents();
-  // }
-
-  // // register() {
-  // //   this.auth.logout();
-  // // }
-
-  // getAllStudents() {
-
-  //   this.data.getAllStudents().subscribe(res => {
-
-  //     this.studentsList = res.map((e: any) => {
-  //       const data = e.payload.doc.data();
-  //       data.id = e.payload.doc.id;
-  //       return data;
-  //     })
-
-  //   }, err => {
-  //     alert('Error while fetching student data');
-  //   })
-
-  // }
-
-  // resetForm() {
-  //   this.id = '';
-  //   this.first_name = '';
-  //   this.last_name = '';
-  //   this.email = '';
-  //   this.mobile = '';
-  // }
-
-  // addStudent() {
-  //   if (this.first_name == '' || this.last_name == '' || this.mobile == '' || this.email == '') {
-  //     alert('Fill all input fields');
-  //     return;
-  //   }
-
-  //   this.studentObj.id = '';
-  //   this.studentObj.email = this.email;
-  //   this.studentObj.first_name = this.first_name;
-  //   this.studentObj.last_name = this.last_name;
-  //   this.studentObj.mobile = this.mobile;
-
-  //   this.data.addStudent(this.studentObj);
-  //   this.resetForm();
-
-  // }
-
-  // updateStudent() {
-
-  // }
-
-  // deleteStudent(student: Student) {
-  //   if (window.confirm('Are you sure you want to delete ' + student.first_name + ' ' + student.last_name + ' ?')) {
-  //     this.data.deleteStudent(student);
-  //   }
-  // }
-
-
   @ViewChild('actionModalTemplate') actionModalTemplate:any;
   selectedGroup: any;
   private modalRef!: NgbModalRef;
@@ -101,7 +25,7 @@ export class DashboardComponent implements OnInit {
   allExpenseDataByGroupId: any[] = [];
   selectedView: string = 'dashboard'; // Default to dashboard
   selectedFriend: any = null;
-  mainTitle: string = 'Command';
+  mainTitle: string = 'Dashboard';
   mainIcon: string = 'fas fa-tachometer-alt';
 
   viewIcons = {
@@ -109,6 +33,7 @@ export class DashboardComponent implements OnInit {
     group: 'fas fa-users',
     friend: 'fas fa-user'
   };
+  selectedExpenseBalanceData: any;
 
   constructor(private modalService: NgbModal,
     private dataService: DataService,) { }
@@ -116,19 +41,70 @@ export class DashboardComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.dataService.getGroups().subscribe((groups: any) => {
-      this.featureGroupsData = groups || [];
-      console.log('Fetched Groups:', this.featureGroupsData);
-    });
-    this.dataService.getFriends().subscribe((friends: any) => {
-      this.allFriendsData = friends || [];
-      console.log('All friends:', this.featureGroupsData);
-    });
-    this.dataService.getExpenses().subscribe((expense: any) => {
-      this.allExpenseData = expense || [];
-      console.log(' allExpenseData:', this.allExpenseData);
-    });
-  }
+    // this.dataService.getGroups().subscribe((groups: any) => {
+    //   this.featureGroupsData = groups || [];
+
+    //   this.dataService.getBalanceByGroupId(this.featureGroupsData[0].groupId).subscribe(
+    //     (balanceData: any) => {
+    //       this.selectedExpenseBalanceData = balanceData;
+
+    //       console.log('Balance data :+++++++++++++++++++++', balanceData);
+
+    //     },
+    //     (error) => {
+    //       console.error('Error fetching balance data:', error);
+    //     }
+    //   );
+    //   console.log('Fetched Groups:', this.featureGroupsData);
+    // });
+    // this.dataService.getFriends().subscribe((friends: any) => {
+    //   this.allFriendsData = friends || [];
+    //   console.log('All friends:', this.featureGroupsData);
+    // });
+    // // this.dataService.getExpenses().subscribe((expense: any) => {
+    // //   this.allExpenseData = expense || [];
+    // //   console.log(' allExpenseData:', this.allExpenseData);
+    // // });
+    // // Fetch balance by groupId (not balanceId)
+
+
+      // Fetch groups
+      this.dataService.getGroups().subscribe((groups: any) => {
+        this.featureGroupsData = groups || [];
+        console.log('Fetched Groups:', this.featureGroupsData);
+
+        if (this.featureGroupsData.length > 0) {
+          // Initialize an array to store all balance data
+          this.selectedExpenseBalanceData = [];
+
+          // Loop through each group and fetch balance data
+          this.featureGroupsData.forEach((group: any) => {
+            this.dataService.getAllBalance().subscribe(
+              (balanceData: any) => {
+                // Add the fetched balance data to the array
+                this.selectedExpenseBalanceData.push({
+                  groupId: group.groupId,
+                  groupTitle: group.groupTitle,
+                  balanceData: balanceData
+                });
+                console.log(`Balance data fetched for groupId ${group.groupId}:`, balanceData);
+              },
+              (error) => {
+                console.error(`Error fetching balance data for groupId ${group.groupId}:`, error);
+              }
+            );
+          });
+        }
+      });
+
+      // Fetch friends data
+      this.dataService.getFriends().subscribe((friends: any) => {
+        this.allFriendsData = friends || [];
+        console.log('All friends:', this.allFriendsData);
+      });
+    }
+
+   
 
 
 
@@ -156,8 +132,9 @@ export class DashboardComponent implements OnInit {
     modalRef.result.then(
       (expense: any) => {
         if (expense) {
-          this.expenses.push(expense);
-          console.log('Expense added:', this.expenses);
+          // this.expenses.push(expense);
+          // console.log('Expense added:', this.expenses);
+          // console.log('Expense&&&&&&&&&&&&&&&&&&&&&:', expense);
         }
       },
       (dismissed) => {
@@ -167,30 +144,31 @@ export class DashboardComponent implements OnInit {
   }
 
 
-  // Method to change the view based on user selection
   selectView(view: string, data: any = null) {
     this.selectedView = view;
 
-    
     if (view === 'group') {
+      // Fetch expenses by groupId
       this.dataService.getExpensesByGroupId(data.groupId).subscribe((expense: any) => {
         this.allExpenseDataByGroupId = expense || [];
-        console.log(' allExpenseDataById:@@@@@@@@', this.allExpenseDataByGroupId);
+        console.log('All Expense Data By group Id:', this.allExpenseDataByGroupId);
       });
 
+      // Update UI elements
       this.selectedGroup = data;
-      this.mainTitle = data.groupTitle; // Just the title without "Group:"
-      this.mainIcon = this.viewIcons.group; // Set the corresponding icon
+      this.mainTitle = data.groupTitle;  // Set the group title
+      this.mainIcon = this.viewIcons.group;  // Set the corresponding icon
     } else if (view === 'friend') {
+      // Handle friend view
       this.selectedFriend = data;
-      this.mainTitle = data.memberName; // Just the name without "Friend:"
-      this.mainIcon = this.viewIcons.friend; // Set the corresponding icon
-    } else if (view === 'dashboard') {
-      this.mainTitle = 'Dashboard'; // Keep the original title
-      this.mainIcon = this.viewIcons.dashboard; // Set the corresponding icon
+      this.mainTitle = data.memberName;  // Set the friend name
+      this.mainIcon = this.viewIcons.friend;  // Set the corresponding icon
+    } else if (view === 'dashboard') {  
+      // Handle dashboard view
+      this.mainTitle = 'Dashboard';  // Keep the original title
+      this.mainIcon = this.viewIcons.dashboard;  // Set the corresponding icon
     }
   }
-
 
 
 

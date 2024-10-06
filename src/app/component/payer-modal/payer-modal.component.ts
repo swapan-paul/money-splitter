@@ -56,6 +56,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class PayerModalComponent implements OnInit {
 
   @Input() allPayers: any[] = [];
+  @Input() totalExpenseAmount: any;
   selectedPayers: any[] = [];
   multiplePayers = false;
 
@@ -67,7 +68,8 @@ export class PayerModalComponent implements OnInit {
     // Initialize selectedPayers to only include the group creator
     const groupCreator = this.allPayers.find(payer => payer.groupCreater);
     if (groupCreator) {
-      this.selectedPayers.push({ ...groupCreator, amount: 0 }); // Add the group creator
+      
+      this.selectedPayers.push({ ...groupCreator, amount: this.totalExpenseAmount }); // Add the group creator
     }
 
     this.multiplePayers = this.selectedPayers.length > 1;
@@ -80,7 +82,7 @@ export class PayerModalComponent implements OnInit {
     if (index > -1) {
       this.selectedPayers.splice(index, 1);
     } else {
-      this.selectedPayers.push({ ...payer, amount: 0 });  // Initialize amount if needed
+      this.selectedPayers.push({ ...payer, amount: '' });  // Initialize amount if needed
     }
 
     this.multiplePayers = this.selectedPayers.length > 1;
@@ -89,8 +91,10 @@ export class PayerModalComponent implements OnInit {
 
   // Confirm the selection and return it to the parent component
   confirmPayers() {
-    this.modal.close(this.selectedPayers);
+
     console.log('Confirmed payers:', this.selectedPayers);
+
+    this.modal.close(this.selectedPayers);
   }
 
   // Check if a payer is already selected

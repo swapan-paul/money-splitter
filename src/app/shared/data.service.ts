@@ -297,5 +297,365 @@ addExpense(expenseData: any): Observable < any > {
     return from(deletePromise); // Convert Promise to Observable
   }
 
+ 
+  // ---------------------------------balance-------------------------------------------------------------------------------
+  
+  // calculateBalancesForGroup(groupId: string): void {
+  //   // Step 1: Fetch group details and members
+  //   this.db.collection('Groups').doc(groupId).get().subscribe((groupSnapshot: any) => {
+  //     const groupData = groupSnapshot.data();
+  //     const members = groupData.members;
+
+  //     // Initialize member balances
+  //     const memberBalances: any = {};
+  //     members.forEach((member: any) => {
+  //       // Initialize the member's balance object
+  //       memberBalances[member.memberId] = {
+  //         balance: {},  // Initialize as an empty object
+  //         memberName: member.memberName,
+  //       };
+
+  //       // Ensure balance is initialized between each member
+  //       members.forEach((otherMember: any) => {
+  //         if (member.memberId !== otherMember.memberId) {
+  //           memberBalances[member.memberId].balance[otherMember.memberId] = 0;  // Initialize balance between members
+  //         }
+  //       });
+  //     });
+
+  //     // Step 2: Fetch all expenses for the group
+  //     this.db.collection('Expenses', ref => ref.where('groupId', '==', groupId)).get().subscribe((expensesSnapshot: any) => {
+  //       const expenses = expensesSnapshot.docs.map((doc: any) => doc.data());
+
+  //       // Step 3: Iterate through each expense and calculate balances
+  //       expenses.forEach((expense: any) => {
+  //         const totalAmount = parseFloat(expense.amount);
+  //         const payersData = expense.payersData || [];
+  //         const participants = expense.withYou || [];
+
+  //         // Calculate how much each participant owes for the total expense
+  //         const numParticipants = participants.length;
+  //         const sharePerPerson = totalAmount / numParticipants;
+
+  //         // Step 4: Distribute the amount each payer paid
+  //         payersData.forEach((payer: any) => {
+  //           const payerId = payer.memberId;
+  //           const paidAmount = parseFloat(payer.amount);
+
+  //           if (!memberBalances[payerId]) {
+  //             console.error(`Payer with ID ${payerId} not found in memberBalances`);
+  //             return;  // Skip if payer is not found
+  //           }
+
+  //           // Calculate each participant's share of this payer's contribution
+  //           const shareOfThisPayer = paidAmount / numParticipants;
+
+  //           participants.forEach((participantId: any) => {
+  //             if (payerId !== participantId) {
+  //               // Each participant owes this payer their share of this payer's contribution
+  //               memberBalances[payerId].balance[participantId] += shareOfThisPayer;
+
+  //               // Update participant's balance (they owe this payer)
+  //               memberBalances[participantId].balance[payerId] -= shareOfThisPayer;
+  //             }
+  //           });
+  //         });
+  //       });
+
+  //       // Step 5: Store balances in Firestore under 'balances' collection
+  //       this.db.collection('Balances').doc(groupId).set({
+  //         memberBalances
+  //       }).then((balanceData) => {
+  //         console.log("Balances calculated and stored successfully!", balanceData);
+  //       }).catch(err => {
+  //         console.error("Error storing balances: ", err);
+  //       });
+  //     });
+  //   });
+  // }
+
+
+  calculateBalancesForGroup(groupId: string): void {
+    // Step 1: Fetch group details and members
+    this.db.collection('Groups').doc(groupId).get().subscribe((groupSnapshot: any) => {
+      const groupData = groupSnapshot.data();
+      const members = groupData.members;
+
+      // Initialize member balances
+      const memberBalances: any = {};
+      members.forEach((member: any) => {
+        // Initialize the member's balance object
+        memberBalances[member.memberId] = {
+          balance: {},  // Initialize as an empty object
+          memberName: member.memberName,
+        };
+
+        // Ensure balance is initialized between each member
+        members.forEach((otherMember: any) => {
+          if (member.memberId !== otherMember.memberId) {
+            memberBalances[member.memberId].balance[otherMember.memberId] = 0;  // Initialize balance between members
+          }
+        });
+      });
+
+      // Step 2: Fetch all expenses for the group
+      this.db.collection('Expenses', ref => ref.where('groupId', '==', groupId)).get().subscribe((expensesSnapshot: any) => {
+        const expenses = expensesSnapshot.docs.map((doc: any) => doc.data());
+
+        // Step 3: Iterate through each expense and calculate balances
+        expenses.forEach((expense: any) => {
+          const totalAmount = parseFloat(expense.amount);
+          const payersData = expense.payersData || [];
+          const participants = expense.withYou || [];
+
+          // Calculate how much each participant owes for the total expense
+          const numParticipants = participants.length;
+          const sharePerPerson = totalAmount / numParticipants;
+
+          // Step 4: Distribute the amount each payer paid
+          payersData.forEach((payer: any) => {
+            const payerId = payer.memberId;
+            const paidAmount = parseFloat(payer.amount);
+            const isCreator = payer.groupCreater || false; // Check if payer is the group creator
+
+            if (!memberBalances[payerId]) {
+              console.error(`Payer with ID ${payerId} not found in memberBalances`);
+              return;  // Skip if payer is not found
+            }
+
+            // Calculate each participant's share of this payer's contribution
+            const shareOfThisPayer = paidAmount / numParticipants;
+
+            participants.forEach((participantId: any) => {
+              if (payerId !== participantId) {
+                // Each participant owes this payer their share of this payer's contribution
+                memberBalances[payerId].balance[participantId] += shareOfThisPayer;
+
+                // Update participant's balance (they owe this payer)
+                memberBalances[participantId].balance[payerId] -= shareOfThisPayer;
+
+                // Special handling if the payer is the group creator
+                if (isCreator) {
+                  // Patch this payer into the balance object if they are the group creator
+                  memberBalances[payerId].groupCreater = true;
+                  console.log(`Group creator ${payer.memberName} has paid and is now patched into balances.`);
+                }
+              }
+            });
+          });
+        });
+
+        // Step 5: Store balances in Firestore under 'balances' collection
+        this.db.collection('Balances').doc(groupId).set({
+          memberBalances
+        }).then((balanceData) => {
+          console.log("Balances calculated and stored successfully!", balanceData);
+        }).catch(err => {
+          console.error("Error storing balances: ", err);
+        });
+      });
+    });
+  }
+
+
+
+
+
+
+
+  public getAllBalance(): Observable<any[]> {
+
+    return this.db.collection('Balances')
+      .snapshotChanges()
+      .pipe(
+        map(actions => {
+          return actions.map(action => {
+            const data = action.payload.doc.data();
+            const id = action.payload.doc.id;
+            return { id, ...(data as object) };
+          });
+        }),
+        catchError(error => {
+          console.error('Error fetching expenses by groupId:', error);
+          return throwError(error);  // Handle errors here
+        })
+      );
+
+}
+
+
+  public getBalanceByGroupId(groupId: string): Observable<any> {
+    return this.db.collection('Balances').doc(groupId)
+      .snapshotChanges()
+      .pipe(
+        map(action => {
+          const data = action.payload.data();
+          const id = action.payload.id;
+          return { id, ...(data as object) };
+        }),
+        catchError(error => {
+          console.error('Error fetching balance by document id:', error);
+          return throwError(error);  // Handle errors here
+        })
+      );
+  }
+
+
+
+
+  
+
+  // calculateBalancesForExpense(groupId: string, expenseId: string): void {
+
+  //   console.log('groupId: string, expenseId: string', groupId, expenseId);
+
+  //   // Step 1: Fetch group details and members
+  //   this.db.collection('Groups').doc(groupId).get().subscribe((groupSnapshot: any) => {
+  //     const groupData = groupSnapshot.data();
+  //     const members = groupData.members;
+
+  //     // Initialize member balances
+  //     const memberBalances: any = {};
+  //     members.forEach((member: any) => {
+  //       memberBalances[member.memberId] = {
+  //         balance: {},  // Initialize as an empty object
+  //         memberName: member.memberName,
+  //         groupCreater: false  // Initialize as false for all members
+  //       };
+
+  //       // Ensure balance is initialized between each member
+  //       members.forEach((otherMember: any) => {
+  //         if (member.memberId !== otherMember.memberId) {
+  //           memberBalances[member.memberId].balance[otherMember.memberId] = 0;  // Initialize balance between members
+  //         }
+  //       });
+  //     });
+
+  //     // Step 2: Fetch the specific expense by its ID
+  //     this.db.collection('Expenses').doc(expenseId).get().subscribe((expenseSnapshot: any) => {
+  //       const expense = expenseSnapshot.data();
+
+  //       const totalAmount = parseFloat(expense.amount);
+  //       const payersData = expense.payersData || [];
+  //       const participants = expense.withYou || [];
+
+  //       // Calculate how much each participant owes for the total expense
+  //       const numParticipants = participants.length;
+  //       const sharePerPerson = totalAmount / numParticipants;
+
+  //       // Step 3: Distribute the amount each payer paid
+  //       payersData.forEach((payer: any) => {
+  //         const payerId = payer.memberId;
+  //         const paidAmount = parseFloat(payer.amount);
+
+  //         if (!memberBalances[payerId]) {
+  //           console.error(`Payer with ID ${payerId} not found in memberBalances`);
+  //           return;  // Skip if payer is not found
+  //         }
+
+  //         // Set the groupCreater flag for the payer if they are the creator
+  //         if (payer.groupCreater) {
+  //           memberBalances[payerId].groupCreater = true;
+  //         }
+
+  //         // Calculate each participant's share of this payer's contribution
+  //         const shareOfThisPayer = paidAmount / numParticipants;
+
+  //         participants.forEach((participantId: any) => {
+  //           if (payerId !== participantId) {
+  //             // Each participant owes this payer their share of this payer's contribution
+  //             memberBalances[payerId].balance[participantId] += shareOfThisPayer;
+
+  //             // Update participant's balance (they owe this payer)
+  //             memberBalances[participantId].balance[payerId] -= shareOfThisPayer;
+  //           }
+  //         });
+  //       });
+
+  //       // Step 4: Update the expense document with the calculated balances
+  //       this.db.collection('Expenses').doc(expenseId).update({
+  //         calculatedBalances: memberBalances  // Add the balances object directly into the expense
+  //       }).then(() => {
+  //         console.log("Balances calculated and stored in the expense document successfully!");
+  //       }).catch(err => {
+  //         console.error("Error updating the expense document: ", err);
+  //       });
+  //     });
+  //   });
+  // }
+
+  calculateBalancesForExpense(groupId: string, expenseId: string): void {
+    console.log('groupId: string, expenseId: string', groupId, expenseId);
+
+    // Step 1: Fetch group details and members
+    this.db.collection('Groups').doc(groupId).get().subscribe((groupSnapshot: any) => {
+      const groupData = groupSnapshot.data();
+      const members = groupData.members;
+
+      // Initialize member balances
+      const memberBalances: any = {};
+      members.forEach((member: any) => {
+        memberBalances[member.memberId] = {
+          balance: {}, // Initialize as an empty object
+          memberName: member.memberName,
+          groupCreater: member.groupCreater || false // Initialize group creator status
+        };
+
+        // Ensure balance is initialized between each member
+        members.forEach((otherMember: any) => {
+          if (member.memberId !== otherMember.memberId) {
+            memberBalances[member.memberId].balance[otherMember.memberId] = 0; // Initialize balance between members
+          }
+        });
+      });
+
+      // Step 2: Fetch the specific expense by its ID
+      this.db.collection('Expenses').doc(expenseId).get().subscribe((expenseSnapshot: any) => {
+        const expense = expenseSnapshot.data();
+
+        const totalAmount = parseFloat(expense.amount);
+        const payersData = expense.payersData || [];
+        const participants = expense.withYou || [];
+
+        // Calculate how much each participant owes for the total expense
+        const numParticipants = participants.length;
+        const sharePerPerson = totalAmount / numParticipants;
+
+        // Step 3: Distribute the amount each payer paid
+        payersData.forEach((payer: any) => {
+          const payerId = payer.memberId;
+          const paidAmount = parseFloat(payer.amount);
+
+          // Ensure payer is a participant
+          if (!memberBalances[payerId]) {
+            console.error(`Payer with ID ${payerId} not found in memberBalances`);
+            return; // Skip if payer is not found
+          }
+
+          // Calculate how much each participant owes to this payer
+          participants.forEach((participantId: any) => {
+            if (payerId !== participantId) {
+              // Each participant owes their share of the payer's contribution
+              const shareOfThisPayer = (paidAmount / numParticipants);
+              memberBalances[payerId].balance[participantId] += shareOfThisPayer; // This payer is owed this amount
+              memberBalances[participantId].balance[payerId] -= shareOfThisPayer; // This participant owes this amount
+            }
+          });
+        });
+
+        // Step 4: Update the expense document with the calculated balances
+        this.db.collection('Expenses').doc(expenseId).update({
+          calculatedBalances: memberBalances // Add the balances object directly into the expense
+        }).then(() => {
+          console.log("Balances calculated and stored in the expense document successfully!");
+        }).catch(err => {
+          console.error("Error updating the expense document: ", err);
+        });
+      });
+    });
+  }
+
+
+
 
 }
