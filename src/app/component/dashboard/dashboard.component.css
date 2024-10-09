@@ -1,135 +1,318 @@
-/* Sidebar Styling */
 #sidebar {
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
-    padding: 20px;
-    background-color: #f7f7f7;
+    background-color: #f8f9fa;
     border-right: 1px solid #ddd;
+    min-height: 100vh;
 }
 
 .splitwise-logo {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: bold;
-    color: #4caf50;
-    margin-bottom: 30px;
+    color: #4db6ac;
+    margin-bottom: 20px;
 }
 
 .nav-link {
-    font-size: 18px;
-    margin: -5px 0;
+    color: #343a40;
 }
 
-h5 {
-    color: #4caf50;
-    font-weight: bold;
-    margin-top: 20px;
+.nav-link:hover {
+    background-color: #e9ecef;
+    color: #007bff;
 }
 
-.invite-friends h6 {
-    font-size: 16px;
-    margin-bottom: 10px;
+.group-s {
+    padding: 10px;
+    font-size: 1rem;
 }
 
-/* Main Content */
-.expenses-list {
-    margin-top: 20px;
-}
-
-.expense-item {
-    border-bottom: 1px solid #ddd;
-    padding: 10px 0;
-}
-
-.expense-item h5 {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.expense-item p {
-    font-size: 14px;
-    color: #777;
-}
-
-/* Right Sidebar - Group Balances */
-.group-balances {
+.custom-header {
+    width: 100%;
     padding: 20px;
-    border-left: 1px solid #ddd;
-    height: 100vh;
+    background-color: #4db6ac;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+#mobileTabs {
     position: fixed;
-    top: 0;
+    bottom: 0;
+    left: 0;
     right: 0;
-    background-color: #f7f7f7;
+    background-color: white;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
-.balance-item p {
-    font-size: 16px;
+.nav-tabs {
+    border-top: 1px solid #ddd;
 }
 
-.text-success {
-    color: green;
+.nav-tabs .nav-link {
+    border: none;
 }
 
-.text-danger {
-    color: red;
-}
-.group-s{
-    font-size: large;
-    color: rgb(6, 91, 194);
-    padding-left: 12px;
-}
-.text-d{
-    
-    color: rgb(7, 89, 98);
+.nav-tabs .nav-link.active {
+    background-color: #4db6ac;
+    color: white;
 }
 
-/* --------------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    #sidebar {
+        display: none;
+    }
 
-                /* Mobile view adjustments */
-                @media (max-width: 768px) {
-                    #sidebar {
-                        display: none;
-                    }
+    #mobileTabs {
+        display: block;
+    }
+}
+
+.nav-link.clickable {
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-link.clickable:hover {
+    background-color: #f1f1f1;
+    color: #4db6ac;
+    text-decoration: underline;
+}
+
+.nav-link.group-s {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link.group-s i {
+    margin-right: 8px;
+}
+
+@media (min-width: 768px) {
+    .px-md-4 {
+        padding-right: 0.5rem !important;
+        padding-left: 0.5rem !important;
+    }
+}
+
+@media (min-width: 576px) {
+    .ms-sm-auto {
+        margin-left: 0px !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .col-lg-9 {
+        flex: 0 0 auto;
+        width: 83%;
+    }
+}
+
+.invite-friends-container {
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    max-width: 300px;
+}
+
+.invite-header {
+    background-color: #4db6ac;
+    padding: 8px;
+    border-radius: 5px 5px 0 0;
+    color: #fff;
+    text-align: center;
+}
+
+.invite-form {
+    margin-top: 10px;
+}
+
+.social-share {
+    display: flex;
+    justify-content: space-around;
+}
+
+.btn-facebook {
+    background-color: #3b5998;
+    color: #fff;
+}
+
+.btn-twitter {
+    background-color: #55acee;
+    color: #fff;
+}
+
+#mobileTabs {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    #mobileTabs {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+    }
+
+    .tab-content {
+        margin-bottom: 60px;
+    }
+}
+
+#sidebar {
+    height: 100vh;
+    overflow-y: hidden;
+}
+
+.scrollable-section {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.scrollable-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-section::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.scrollable-section:hover {
+    overflow-y: auto;
+}
+.profile-image{
+    width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+        padding: 20px;
+        background-color: #4db6ac;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* .button-group {
+    display: flex;
+    justify-content: flex-start;
+} */
+
+@media (max-width: 768px) {
+
+    /* Mobile View */
+    .header-container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+            padding: 20px;
+            background-color: #4db6ac;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .button-group {
+        flex-direction: column;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .button-group button {
+        margin-bottom: 10px;
+        /* Adds space between buttons on mobile */
+        width: 100%;
+    }
+
+    .profile-image {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+        padding: 20px;
+        background-color: #4db6ac;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.button-group {
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Only change the layout on mobile screens */
+@media (max-width: 768px) {
+
+    /* Mobile View */
+    .header-container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+            padding: 20px;
+            background-color: #4db6ac;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         
-                    /* Bottom tabs for mobile */
-                    #mobileTabs {
-                        display: flex;
-                        position: fixed;
-                        bottom: 0;
-                        left: 0;
-                        width: 100%;
-                        background-color: #f8f9fa;
-                        box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
-                    }
-        
-                    #mobileTabs .nav-item {
-                        flex-grow: 1;
-                        text-align: center;
-                    }
-        
-                    .tab-content {
-                        margin-bottom: 60px;
-                        /* Ensure content doesn't overlap with the tabs */
-                    }
-                }
-        
-                /* Desktop view adjustments */
-                @media (min-width: 769px) {
-                    #sidebar {
-                        display: block;
-                    }
-        
-                    #mobileTabs {
-                        display: none;
-                    }
-        
-                    .tab-content {
-                        display: none;
-                    }
-                }
-        
-                .tab-pane {
-                    padding: 20px;
-                }
+    }
+
+    .button-group {
+        flex-direction: column;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .button-group button {
+        margin-bottom: 10px;
+        /* Adds space between buttons on mobile */
+        width: 100%;
+        /* Makes buttons full width */
+    }
+
+    .profile-image {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+.settle-style {
+    margin-right: 8px !important;
+}

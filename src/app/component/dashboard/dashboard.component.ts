@@ -1,10 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Student } from 'src/app/model/student';
 import { AuthService } from 'src/app/shared/auth.service';
 import { DataService } from 'src/app/shared/data.service';
 import { AddExpenseModalComponent } from '../add-expense-modal/add-expense-modal.component';
 import { AddEditGroupComponent } from '../add-edit-group/add-edit-group.component';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { EmailService } from 'src/app/shared/email/email.service';
+import { PaymentModalComponent } from '../payment-modal/payment-modal.component';
+import { ProfileComponent } from '../profile/profile.component';
 
 
 @Component({
@@ -13,8 +18,9 @@ import { AddEditGroupComponent } from '../add-edit-group/add-edit-group.componen
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-
+  
   @ViewChild('actionModalTemplate') actionModalTemplate:any;
+  inviteEmail: string = '';
   selectedGroup: any;
   private modalRef!: NgbModalRef;
   expenses: any[] = [];
@@ -23,6 +29,7 @@ export class DashboardComponent implements OnInit {
   allFriendsData: any[] = [];
   allExpenseData: any[] = [];
   allExpenseDataByGroupId: any[] = [];
+  allExpense: any[] = [];
   selectedView: string = 'dashboard'; // Default to dashboard
   selectedFriend: any = null;
   mainTitle: string = 'Dashboard';
@@ -31,45 +38,66 @@ export class DashboardComponent implements OnInit {
   viewIcons = {
     dashboard: 'fas fa-tachometer-alt',
     group: 'fas fa-users',
-    friend: 'fas fa-user'
+    friend: 'fas fa-user',
+    expenses: 'fas fa-money-bill-wave'
   };
   selectedExpenseBalanceData: any;
+  allExpenseDataByMemberId: any[] = [];
+  selectedGroupDetail: any;
+  memberNames: any[] = [];
+  allmemberNames: any[] = [];
+  groupCreatedBy: any;
+  groupCreaterUid: any;
+
+
+  user = {
+    profileImage: 'assets/logo/profile.png'
+  };
+  userData: any;
+  isMobileView: boolean = false;
+
+
+
 
   constructor(private modalService: NgbModal,
-    private dataService: DataService,) { }
+    private dataService: DataService,
+    private firestore: AngularFirestore, 
+    private auth: AngularFireAuth, 
+    private emailService: EmailService) { }
+
+
+  // Detect screen size changes
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.isMobileView = window.innerWidth <= 768; // Example mobile breakpoint at 768px
+  }
 
 
 
   ngOnInit(): void {
-    // this.dataService.getGroups().subscribe((groups: any) => {
-    //   this.featureGroupsData = groups || [];
 
-    //   this.dataService.getBalanceByGroupId(this.featureGroupsData[0].groupId).subscribe(
-    //     (balanceData: any) => {
-    //       this.selectedExpenseBalanceData = balanceData;
+    this.isMobileView = window.innerWidth <= 768;
 
-    //       console.log('Balance data :+++++++++++++++++++++', balanceData);
+    this.groupCreatedBy = localStorage.getItem('userName') || '';
+    this.groupCreaterUid = localStorage.getItem('uId') || '';
 
-    //     },
-    //     (error) => {
-    //       console.error('Error fetching balance data:', error);
-    //     }
-    //   );
-    //   console.log('Fetched Groups:', this.featureGroupsData);
-    // });
-    // this.dataService.getFriends().subscribe((friends: any) => {
-    //   this.allFriendsData = friends || [];
-    //   console.log('All friends:', this.featureGroupsData);
-    // });
-    // // this.dataService.getExpenses().subscribe((expense: any) => {
-    // //   this.allExpenseData = expense || [];
-    // //   console.log(' allExpenseData:', this.allExpenseData);
-    // // });
-    // // Fetch balance by groupId (not balanceId)
+    this.dataService.getUserData(this.groupCreaterUid).subscribe({
+        next: (data) => {
 
+        this.userData = data;
 
-      // Fetch groups
-      this.dataService.getGroups().subscribe((groups: any) => {
+        this.user = {
+          profileImage: this.userData.profileImageUrl ? this.userData.profileImageUrl : 'assets/logo/profile.png'
+        };
+
+        console.log('this.userData++++++++++++', this.userData)
+        },
+        error: (error) => {
+          console.error('Error fetching balance data:', error);
+        }
+      });
+ 
+    this.dataService.getGroups(this.groupCreaterUid).subscribe((groups: any) => {
         this.featureGroupsData = groups || [];
         console.log('Fetched Groups:', this.featureGroupsData);
 
@@ -98,37 +126,25 @@ export class DashboardComponent implements OnInit {
       });
 
       // Fetch friends data
-      this.dataService.getFriends().subscribe((friends: any) => {
+    this.dataService.getFriends(this.groupCreaterUid).subscribe((friends: any) => {
         this.allFriendsData = friends || [];
-        console.log('All friends:', this.allFriendsData);
+        this.allmemberNames = this.allFriendsData.map(friend => friend.memberName);
+        console.log('All friends:##########', this.allFriendsData);
+        console.log('allmemberNames#########', this.allmemberNames);
       });
     }
-
-   
-
-
-
-  groupTitle = 'Home Sweet Home';
-  groupDetails = '3 people · Created July 2019';
-  oweAmount = '$80.61';
-  transactions = [
-    { description: 'Peanut Blasters', date: 'July 05', amount: '$3.33', type: 'borrowed' },
-    { description: 'Stamps', date: 'July 01', amount: '$8.34', type: 'borrowed' },
-    { description: 'Wifi', date: 'July 01', amount: '$29.67', type: 'borrowed' },
-    { description: 'Water', date: 'June 28', amount: '$101.48', type: 'lent' },
-  ];
 
 
   openExpensesModal() {
     const modalRef = this.modalService.open(AddExpenseModalComponent, { size: 'lg' });
 
-    // Correct way to pass selectedGroup to modal
-    if (this.selectedGroup) {
+    if (this.selectedGroup, this.featureGroupsData) {
       console.log('this.selectedGroup+++++++', this.selectedGroup);
-      modalRef.componentInstance.selectedGroup = this.selectedGroup;  // Pass the selectedGroup instance to the modal
+      modalRef.componentInstance.selectedGroup = this.selectedGroup;
+      modalRef.componentInstance.allGroup = this.featureGroupsData;
+      modalRef.componentInstance.selectedView = this.selectedView;
     }
 
-    // When the modal closes, get the result (the expense) and add it to the list
     modalRef.result.then(
       (expense: any) => {
         if (expense) {
@@ -145,22 +161,64 @@ export class DashboardComponent implements OnInit {
 
 
   selectView(view: string, data: any = null) {
+
+
+    console.log('data=============',data);
     this.selectedView = view;
 
     if (view === 'group') {
-      // Fetch expenses by groupId
       this.dataService.getExpensesByGroupId(data.groupId).subscribe((expense: any) => {
         this.allExpenseDataByGroupId = expense || [];
         console.log('All Expense Data By group Id:', this.allExpenseDataByGroupId);
       });
 
-      // Update UI elements
+      // if(){
+
+      // }
+
+
       this.selectedGroup = data;
+      this.selectedGroupDetail = data;
+
+      console.log('selectedGroupDetail------444444', this.selectedGroupDetail);
+
+      const getMemberNames = (group: any) => {
+        return group.members
+          .filter((member: any) => !member.groupCreater) // Exclude the group creator
+          .map((member: any) => member.memberName); // Get the member names
+      };
+
+      // Usage
+      this.memberNames = getMemberNames(this.selectedGroupDetail);
+      console.log(this.memberNames); // ["chintu", "pintu"]
+
+
+
       this.mainTitle = data.groupTitle;  // Set the group title
       this.mainIcon = this.viewIcons.group;  // Set the corresponding icon
     } else if (view === 'friend') {
       // Handle friend view
-      this.selectedFriend = data;
+
+      this.dataService.getExpensesByMemberId(data.id).subscribe((expense: any) => {
+        this.allExpenseDataByMemberId = expense || [];
+        console.log('All Expense Data By member Id:', this.allExpenseDataByMemberId);
+      });
+
+      
+      const selectedGroupFriend = {
+        ...data,
+        createdAt: new Date(),
+        groupCreaterUid: this.groupCreaterUid,
+        groupCreatedBy: this.groupCreatedBy,
+        members: [
+          { memberId: data.id , memberName: data.memberName },
+          { memberId: this.groupCreaterUid, memberName: this.groupCreatedBy }
+        ]  
+      };
+
+
+
+      this.selectedGroup = selectedGroupFriend;
       this.mainTitle = data.memberName;  // Set the friend name
       this.mainIcon = this.viewIcons.friend;  // Set the corresponding icon
     } else if (view === 'dashboard') {  
@@ -168,7 +226,44 @@ export class DashboardComponent implements OnInit {
       this.mainTitle = 'Dashboard';  // Keep the original title
       this.mainIcon = this.viewIcons.dashboard;  // Set the corresponding icon
     }
+    else if (view === 'allExpenses') { 
+      
+      
+      this.dataService.getExpenses(this.groupCreaterUid).subscribe((expense: any) => {
+        this.allExpense = expense || [];
+        console.log('All Expense:', this.allExpense);
+      });
+      // Handle dashboard view
+
+      this.mainTitle = 'All Expenses';
+      this.mainIcon = this.viewIcons.expenses;
+    }
   }
+
+ 
+
+
+  openProfileModal() {
+    const modalRef = this.modalService.open(ProfileComponent, { centered: true, windowClass: 'custom-modal-profile' });
+    modalRef.componentInstance.user = {
+      email: this.userData?.email,
+      mobile: this.userData?.mobile,
+      uid: this.userData?.uid,
+      username: this.userData?.username,
+      profileImageUrl: this.userData?.profileImageUrl ? this.userData.profileImageUrl: ''
+    };
+
+    modalRef.result.then(
+      (updatedProfile) => {
+        console.log('Profile updated:', updatedProfile);
+      },
+      () => {
+        console.log('Profile modal closed');
+      }
+    );
+  }
+
+
 
 
 
@@ -198,39 +293,50 @@ export class DashboardComponent implements OnInit {
 
 
 
-  // // Function to open the action modal
-  // openActionModal(group: any) {
 
-  //   console.log('group------------', group)
-  //   this.selectedGroup = group;  // Store the selected group
-  //   this.modalRef = this.modalService.open(this.actionModalTemplate, { centered: true, windowClass: 'custom-modal' }); // Open the modal
-  // }
+  sendInvite() {
+    if (this.inviteEmail) {
+      const inviteData = {
+        email: this.inviteEmail,
+        timestamp: new Date(),
+      };
 
-  // // Function to edit group
-  // editGroup() {
-  //   this.modalRef.close();  // Close the action modal
-  //   // You can now open another modal for editing, similar to how you handle group addition
+      // Storing invite information in Firestore
+      this.firestore.collection('invites').add(inviteData).then(() => {
+        console.log('Invite saved in Firebase');
+      });
 
-  //   this.addGroup(this.selectedGroup);
-  // }
+      // // Call a service to send the actual email (assumes you have a service for this)
+      // this.emailService.sendInviteEmail(this.inviteEmail).subscribe(response => {
+      //   console.log('Invite sent successfully', response);
+      // });
+
+      // Reset the invite email input field
+      this.inviteEmail = '';
+    } else {
+      console.log('Please enter a valid email');
+    }
+  }
+
+  openPaymentModal() {
 
 
-  // // Function to delete group
-  // deleteGroup() {
-  //   this.modalRef.close(); // Close the action modal
-  //   if (confirm('Are you sure you want to delete this group?')) {
-  //     this.dataService.deleteGroup(this.selectedGroup.id).subscribe(
-  //       response => {
-  //         console.log('Group deleted successfully');
-  //         // Refresh or update your list of groups after delete
-  //       },
-  //       error => {
-  //         console.error('Error while deleting group:', error);
-  //       }
-  //     );
-  //   }
-  // }
+    console.log('this.allmemberNames&&&&&&&&&', this.allmemberNames)
+    const modalRef = this.modalService.open(PaymentModalComponent, { size: 'lg', centered: true });
+    modalRef.componentInstance.memberNames = this.memberNames.length > 0 ? this.memberNames : this.allmemberNames;
+    modalRef.componentInstance.groupName = this.selectedGroup.groupTitle ? this.selectedGroup.groupTitle : '';
+    modalRef.result.then(
+      (paymentData: any) => {
+        // Handle result when modal is closed with data
+        console.log('>>>>>>>>>>>Payment modal result<<<<<<<<<<<<', paymentData);
+      },
+      (dismissed) => {
+        console.log('Modal dismissed:', dismissed);
+      }
+    );
+  }
+
+
 }
-
 
 

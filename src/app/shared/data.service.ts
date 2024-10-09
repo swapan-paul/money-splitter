@@ -11,35 +11,7 @@ import { catchError, finalize, map } from 'rxjs/operators';
 })
 export class DataService {
 
-  // constructor(private afs : AngularFirestore, private fireStorage : AngularFireStorage) { }
-
-
-  // // add student
-  // addStudent(student : Student) {
-  //   student.id = this.afs.createId();
-  //   return this.afs.collection('/Students').add(student);
-  // }
-
-  // // get all students
-  // getAllStudents() {
-  //   return this.afs.collection('/Students').snapshotChanges();
-  // }
-
-  // // delete student
-  // deleteStudent(student : Student) {
-  //    this.afs.doc('/Students/'+student.id).delete();
-  // }
-
-  // // update student
-  // updateStudent(student : Student) {
-  //   this.deleteStudent(student);
-  //   this.addStudent(student);
-  // }
-
-
-
   constructor(private db: AngularFirestore, private storage: AngularFireStorage) { }
-
 
   // ---------------------------------------group-------------------------------------------------------------
 
@@ -95,8 +67,8 @@ export class DataService {
   }
 
 
-  public getGroups(): Observable<any[]> {
-    return this.db.collection('Groups')
+  public getGroups(groupCreaterUid: any): Observable<any[]> {
+    return this.db.collection('Groups', ref => ref.where('groupCreaterUid', '==', groupCreaterUid))
       .snapshotChanges()
       .pipe(
         map(actions => actions.map(a => {
@@ -150,7 +122,7 @@ export class DataService {
   // }
 
 
-  addFriendsWithIds(groupId: string, members: string[], groupTitle: any): Observable<any> {
+  addFriendsWithIds(groupId: string, members: string[], groupTitle: any , groupCreatedBy: any, groupCreaterUid: any ): Observable<any> {
     return new Observable(observer => {
       const updatedMembers: any[] = [];
       const batch = this.db.firestore.batch();  // Direct Firestore batch operation
@@ -162,7 +134,9 @@ export class DataService {
           groupId,
           groupTitle,
           memberName,
-          addedAt: new Date()  // Timestamp for when the friend was added
+          addedAt: new Date(),
+          groupCreaterUid: groupCreaterUid,
+          groupCreatedBy: groupCreatedBy,
         });
 
         // Push the member object with ID into the updatedMembers array
@@ -207,8 +181,8 @@ export class DataService {
   }
 
 
-  public getFriends(): Observable<any[]> {
-    return this.db.collection('Friends')
+  public getFriends(groupCreaterUid: any): Observable<any[]> {
+    return this.db.collection('Friends', ref => ref.where('groupCreaterUid', '==', groupCreaterUid))
       .snapshotChanges()
       .pipe(
         map(actions => actions.map(a => {
@@ -257,8 +231,8 @@ addExpense(expenseData: any): Observable < any > {
   });
 }
 
-  public getExpenses(): Observable<any[]> {
-    return this.db.collection('Expenses')
+  public getExpenses(groupCreaterUid: any): Observable<any[]> {
+    return this.db.collection('Expenses', ref => ref.where('groupCreaterUid', '==', groupCreaterUid))
       .snapshotChanges()
       .pipe(
         map(actions => actions.map(a => {
@@ -286,10 +260,78 @@ addExpense(expenseData: any): Observable < any > {
         }),
         catchError(error => {
           console.error('Error fetching expenses by groupId:', error);
-          return throwError(error);  // Handle errors here
+          return throwError(error);  
         })
       );
   }
+
+
+  // public getExpensesByMemberId(memberId: string): Observable<any[]> {
+
+  //   return this.db.collection('Expenses').snapshotChanges()
+  //     .pipe(
+  //       map(actions => {
+
+  //         // Step 1: Map through all documents (expenses) in the collection
+  //         return actions.map(action => {
+  //           const data = action.payload.doc.data();
+  //           const id = action.payload.doc.id;
+            
+  //           console.log('data%%%%%%%%%%', data);
+  //           // Step 2: Check if payersData contains the memberId
+  //           const isMemberPresent = (data as any).payersData.some((payer: any) => payer.memberId === memberId);
+            
+  //           console.log('isMemberPresent%%%%%%%%%%', isMemberPresent);
+  //           // Step 3: If memberId is present in payersData, return the expense data
+  //           if (isMemberPresent) {
+  //             return { id, ...(data as object) };  // Return the expense if the memberId is found
+  //           }
+
+  //           return null;  // Return null if memberId is not found in this expense
+  //         }).filter(expense => expense !== null);  // Step 4: Filter out null values
+  //       }),
+  //       catchError(error => {
+  //         console.error('Error fetching expenses by memberId:', error);
+  //         return throwError(error);  
+  //       })
+  //     );
+  // }
+
+  public getExpensesByMemberId(memberId: string): Observable<any[]> {
+
+    return this.db.collection('Expenses').snapshotChanges()
+      .pipe(
+        map(actions => {
+
+          // Step 1: Map through all documents (expenses) in the collection
+          return actions.map(action => {
+            const data = action.payload.doc.data();
+            const id = action.payload.doc.id;
+
+            console.log('data%%%%%%%%%%', data);
+
+            // Step 2: Check if 'withYou' array contains the memberId
+            const isMemberPresentInWithYou = (data as any).withYou && (data as any).withYou.includes(memberId);
+
+            console.log('isMemberPresentInWithYou%%%%%%%%%%', isMemberPresentInWithYou);
+
+            // Step 3: If memberId is present in the 'withYou' array, return the expense data
+            if (isMemberPresentInWithYou) {
+              return { id, ...(data as object) };  // Return the expense if the memberId is found in 'withYou'
+            }
+
+            return null;  // Return null if memberId is not found in the 'withYou' array
+          }).filter(expense => expense !== null);  // Step 4: Filter out null values
+        }),
+        catchError(error => {
+          console.error('Error fetching expenses by memberId:', error);
+          return throwError(error);  
+        })
+      );
+  }
+
+
+
 
 
   deleteExpenseById(expenseId: string): Observable<void> {
@@ -477,7 +519,7 @@ addExpense(expenseData: any): Observable < any > {
         }),
         catchError(error => {
           console.error('Error fetching expenses by groupId:', error);
-          return throwError(error);  // Handle errors here
+          return throwError(error);  
         })
       );
 
@@ -495,7 +537,24 @@ addExpense(expenseData: any): Observable < any > {
         }),
         catchError(error => {
           console.error('Error fetching balance by document id:', error);
-          return throwError(error);  // Handle errors here
+          return throwError(error);  
+        })
+      );
+  }
+
+  
+  public getUserData(userId: string): Observable<any> {
+    return this.db.collection('users').doc(userId)
+      .snapshotChanges()
+      .pipe(
+        map(action => {
+          const data = action.payload.data();
+          const id = action.payload.id;
+          return { id, ...(data as object) };
+        }),
+        catchError(error => {
+          console.error('Error fetching User by document id:', error);
+          return throwError(error); 
         })
       );
   }

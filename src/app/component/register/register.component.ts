@@ -80,6 +80,8 @@ export class RegisterComponent implements OnInit {
     //   (err: any) => console.error('Login error', err)
     // )
 
-    this.authService.register(this.registrationForm.value.email, this.registrationForm.value.password);
+    // this.authService.register(this.registrationForm.value.email, this.registrationForm.value.password);
+    const { email, password, username, mobile } = this.registrationForm.value;
+    this.authService.register(email, password, username, mobile);
   }
 }

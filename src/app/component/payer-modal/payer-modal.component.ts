@@ -63,7 +63,7 @@ export class PayerModalComponent implements OnInit {
   constructor(public modal: NgbActiveModal) { }
 
   ngOnInit(): void {
-    console.log('Initial allPayers:', this.allPayers);
+    console.log('Initial allPayers:@@@@@@@@@@', this.allPayers);
 
     // Initialize selectedPayers to only include the group creator
     const groupCreator = this.allPayers.find(payer => payer.groupCreater);
@@ -82,7 +82,7 @@ export class PayerModalComponent implements OnInit {
     if (index > -1) {
       this.selectedPayers.splice(index, 1);
     } else {
-      this.selectedPayers.push({ ...payer, amount: '' });  // Initialize amount if needed
+      this.selectedPayers.push({ ...payer, amount: 0 });  // Initialize amount if needed
     }
 
     this.multiplePayers = this.selectedPayers.length > 1;

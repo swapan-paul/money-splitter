@@ -5,9 +5,7 @@ body {
     font-family: 'Roboto', sans-serif;
     background: url('../../../assets/logo/logo.png') no-repeat center center fixed;
     background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
 }
 
 
@@ -25,35 +23,29 @@ body {
 
 }
 
-/* Login form container */
 .login-container {
     position: relative;
     z-index: 2;
-    background-color: rgba(255, 255, 255, 0.9);
-    /* Semi-transparent white background */
-    padding: 2rem;
+    background-color: rgb(255 255 255 / 90%);
+    padding: 5rem;
     width: 100%;
-    max-width: 400px;
-    border-radius: 10px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    /* Soft shadow for card effect */
+    max-width: 725px;
+    border-radius: 14px;
+    box-shadow: 0 43px 29px rgba(0, 0, 0, 0.3);
     text-align: center;
 
 }
 
-/* Logo styling */
 .login-logo img {
-    width: 80px;
+    width: 229px;
     margin-bottom: 20px;
 }
 
-/* Header styling */
 h3 {
     color: #333;
     margin-bottom: 1.5rem;
 }
 
-/* Input styling */
 input.form-control {
     padding: 1rem;
     border-radius: 30px;
@@ -63,16 +55,15 @@ input.form-control {
 }
 
 input.form-control:focus {
-    border-color: #007bff;
+    border-color: #4db6ac;
     box-shadow: none;
 }
 
-/* Submit button */
 button {
     padding: 1rem;
     border-radius: 30px;
     width: 100%;
-    background-color: #007bff;
+    background-color: #4db6ac;
     border: none;
     color: #fff;
     font-weight: bold;
@@ -80,22 +71,23 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #4db6ac;
 }
 
-/* Text link styling */
 .text-center a {
-    color: #007bff;
+    color: #4db6ac;
     text-decoration: none;
 }
 
 .text-center a:hover {
-    color: #0056b3;
+    color: #4db6ac;
 }
 
 @media (max-width: 576px) {
     .login-container {
         padding: 1.5rem;
+        height: inherit;
+        border-radius: 97px
     }
 }
 

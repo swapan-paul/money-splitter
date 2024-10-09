@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GroupViewComponent } from './group-view.component';
+import { AllExpensesViewComponent } from './all-expenses-view.component';
 
-describe('GroupViewComponent', () => {
-  let component: GroupViewComponent;
-  let fixture: ComponentFixture<GroupViewComponent>;
+describe('AllExpensesViewComponent', () => {
+  let component: AllExpensesViewComponent;
+  let fixture: ComponentFixture<AllExpensesViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GroupViewComponent ]
+      declarations: [ AllExpensesViewComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GroupViewComponent);
+    fixture = TestBed.createComponent(AllExpensesViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

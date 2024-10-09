@@ -8,6 +8,33 @@
 <div class="modal-body">
     <form [formGroup]="expenseForm">
 
+        <!-- Informational Note -->
+        <p class="text-muted" style="font-size: 0.9em;">
+            Please select a group for the expenses. If you don't have one, consider creating a new group.
+        </p>
+
+        <div class="form-group">
+            <label for="group-select" class="form-label">
+                Group <span class="text-danger">*</span>
+            </label>
+        
+            <!-- Show button if selectedGroup is available -->
+            <button *ngIf="selectedView == 'group'" type="button" class="btn btn-outline-secondary">
+                {{ selectedGroup?.groupTitle }}
+            </button>
+        
+            <!-- Show dropdown if selectedGroup is not available -->
+            <select *ngIf="selectedView !== 'group'" class="form-select" formControlName="selectedGroupControl">
+                <option [ngValue]="null" disabled>Select a Group</option>
+                <option *ngFor="let group of allGroup" [ngValue]="group">
+                    {{ group.groupTitle }}
+                </option>
+            </select>
+            <div *ngIf="expenseForm.get('selectedGroupControl')?.touched && expenseForm.get('selectedGroupControl')?.invalid" class="text-danger">
+                Group is required....
+            </div>
+        </div>
+
         <div class="form-group d-flex justify-content-center align-items-center">
             <div class="col-md-2">
                 <label class="font-weight-bold">With you and:</label>
@@ -18,9 +45,10 @@
                     {{ selectedGroup ? selectedGroup.groupTitle + "'s all members" : 'Select group members' }}
                 </span>
 
-                <ng-select *ngIf="isNgSelectVisible" #ngSelectRef [items]="selectedGroup?.members"
+                <ng-select *ngIf="isNgSelectVisible" #ngSelectRef 
+                    [items]="selectedGroup?.members"
                     bindLabel="memberName" bindValue="memberId" [(ngModel)]="selectedMembers" [multiple]="true"
-                    formControlName="withYou" class="form-control">
+                    formControlName="withYou" class="form-control" >
                 </ng-select>
             </div>
         </div>
@@ -32,10 +60,10 @@
 
         <div class="d-flex justify-content-around align-content-around">
             <div class="col-md-2 image-preview">
-                <img [src]="imageSrc ? imageSrc : 'assets/logo/logo.png'" alt="Dynamic Image" class="img-fluid" />
+                <img [src]="imageSrc ? imageSrc : 'assets/logo/ticket.png'" alt="Dynamic Image" class="img-fluid" />
             </div>
             <div class="col-md-10 form-group">
-                <label for="description">Enter a description</label>
+                <label for="description">Enter a description <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" formControlName="description" (input)="updateImage()"
                     placeholder="Enter a description">
             </div>
@@ -48,7 +76,7 @@
         </div>
 
         <div class="form-group">
-            <label for="amount">Amount</label>
+            <label for="amount">Amount <span class="text-danger">*</span></label>
             <input type="number" class="form-control" formControlName="amount" placeholder="$0.00"
                 style="font-size: 1.5em; font-weight: bold;">
         </div>
@@ -70,7 +98,7 @@
         </div>
 
         <div class="form-group">
-            <label for="date">Date</label>
+            <label for="date">Date <span class="text-danger">*</span></label>
             <input type="date" class="form-control" formControlName="date">
         </div>
 
@@ -80,14 +108,10 @@
         </div>
 
         <div class="form-group">
-            <label>Add image/notes</label>
-            <button type="button" class="btn btn-outline-secondary" disabled="true">Add image/notes</button>
+            <label>Add notes</label>
+            <input type="text" class="form-control" placeholder="Add your notes here..." formControlName="notes" >
         </div>
 
-        <div class="form-group">
-            <label>Group</label>
-            <button type="button" class="btn btn-outline-secondary">{{selectedGroup?.groupTitle}}</button>
-        </div>
     </form>
 </div>
 

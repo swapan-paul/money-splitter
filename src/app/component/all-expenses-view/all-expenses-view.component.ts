@@ -5,16 +5,20 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 import { AddExpenseModalComponent } from '../add-expense-modal/add-expense-modal.component';
 
 @Component({
-  selector: 'app-group-view',
-  templateUrl: './group-view.component.html',
-  styleUrls: ['./group-view.component.css']
+  selector: 'app-all-expenses-view',
+  templateUrl: './all-expenses-view.component.html',
+  styleUrls: ['./all-expenses-view.component.css']
 })
-export class GroupViewComponent implements OnInit {
-  // @Input() group: any;
+export class AllExpensesViewComponent implements OnInit {
+
+
   @Input() ExpenseData: any;
-  // @Input() balanceData: any;
+  @Input() friend: any;
+  @Input() selectedGroup: any;
+  @Input() allGroup: any;
   calculatedBalances: any;
   calculateData: any;
+  totalOwes:any;
   constructor(
     private dataService: DataService,
     private modalService: NgbModal
@@ -45,19 +49,19 @@ export class GroupViewComponent implements OnInit {
       const memberData = calculatedBalances[memberId];
       const balances = memberData.balance || {};
       let totalPaid = 0;
-      let totalOwes = 0;
+      this.totalOwes = 0;
 
       // Calculate total paid and total owes
       Object.keys(balances).forEach((otherMemberId: string) => {
         if (balances[otherMemberId] > 0) {
           totalPaid += balances[otherMemberId]; // The member is owed this amount
         } else {
-          totalOwes -= balances[otherMemberId]; // The member owes this amount
+        this.totalOwes -= balances[otherMemberId]; // The member owes this amount
         }
       });
 
       // Calculate net balance
-      const netBalance = totalPaid - totalOwes;
+      const netBalance = totalPaid - this.totalOwes;
 
       // Get the payment amount for the member from the paymentDetails array
       const paymentDetail = paymentDetails.find((detail: any) => detail.memberId === memberId);
@@ -140,6 +144,31 @@ export class GroupViewComponent implements OnInit {
     modalRef.componentInstance.expenseId = expenseId; // Pass the expenseId to the modal
   }
 
+  openExpensesModal() {
+    const modalRef = this.modalService.open(AddExpenseModalComponent, { size: 'lg' });
+
+    // Correct way to pass selectedGroup to modal
+    if (this.selectedGroup) {
+      console.log('this.selectedGroup+++++++', this.selectedGroup);
+      modalRef.componentInstance.selectedGroup = this.selectedGroup;  // Pass the selectedGroup instance to the modal
+    }
+
+    // When the modal closes, get the result (the expense) and add it to the list
+    modalRef.result.then(
+      (expense: any) => {
+        if (expense) {
+          // this.expenses.push(expense);
+          // console.log('Expense added:', this.expenses);
+          // console.log('Expense&&&&&&&&&&&&&&&&&&&&&:', expense);
+        }
+      },
+      (dismissed) => {
+        console.log('Modal dismissed');
+      }
+    );
+  }
+
 }
+
 
 

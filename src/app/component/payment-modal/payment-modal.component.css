@@ -1,0 +1,38 @@
+.modal-header{
+    background-color: #4db6ac;
+}
+
+.recipient-name {
+    color: #007bff;
+    cursor: pointer;
+}
+
+.select-recipient {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+.list-group-item {
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #f1f1f1;
+}
+.amount-input {
+    width: auto;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 0;
+}
+
+.recipient-dropdown {
+    margin-top: 5px;
+    max-height: 200px;
+    margin-top: -11rem;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+

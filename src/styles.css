@@ -19,13 +19,9 @@ ng-dropdown-panel .scroll-host {
     -webkit-overflow-scrolling: touch;
 }
 
-/* .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
-    background-color: lavender;
-    white-space: nowrap;
-    margin-left: 13px;
-    padding: 0px 14px;
-    border: 19px;
-} */
+.settle-style {
+    margin-right: 60px;
+}
 
 
 .ng-select.ng-select-multiple .ng-select-container {
@@ -88,6 +84,17 @@ ng-dropdown-panel .scroll-host {
     box-sizing: border-box;
         padding: 4px;
         font-size: large;
+}
+
+.custom-modal .modal-dialog {
+    max-width: 700px;
+    height: 12px;
+    margin: auto;
+}
+
+.custom-modal-profile .modal-content {
+    max-width: 100vh;
+    height: 100vh;
 }
 
 

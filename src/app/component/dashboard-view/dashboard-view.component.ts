@@ -16,12 +16,13 @@ export class DashboardViewComponent implements OnInit {
   credits: any[] = [];
   balanceData: any;
   memberList: any;
+  groupCreaterUid: any;
 
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    // Call this for each group on initialization if needed
-    // Example: this.fetchAndCalculateGroupBalances('someGroupId');
+    this.groupCreaterUid = localStorage.getItem('uId') || '';
+
   }
 
   fetchAndCalculateGroupBalances(groupId: string): void {
@@ -175,10 +176,8 @@ export class DashboardViewComponent implements OnInit {
     return balancesArray;
   }
 
-  // Example method to get member name by ID
   getMemberNameById(memberId: string): string {
-
-    console.log('this.memberList&&&&&&&&&&&&&&', this.memberList)
+    // console.log('this.memberList&&&&&&&&&&&&&&', this.memberList)
     const memberData = this.memberList.find((member: any) => member.memberId === memberId);
     return memberData ? memberData.memberName : 'Unknown Member';
   }

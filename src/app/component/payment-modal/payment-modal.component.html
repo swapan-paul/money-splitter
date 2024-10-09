@@ -1,0 +1,59 @@
+<!-- Choose Payment Method Modal -->
+<div class="modal-header">
+    <h4 class="modal-title">Choose Payment Method</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closePaymentModal()"></button>
+</div>
+<div class="modal-body">
+    <p>Choose a payment method</p>
+
+    <button class="btn btn-outline-primary w-100" style="background-color: #4db6ac;"
+        (click)="openSettleUpModal(settleUpModal)">Record a cash payment</button>
+    <button class="btn btn-outline-success w-100 mt-2">PayPal</button>
+
+    <small class="text-muted">
+        When you use a payment service, your payment is shared with that company under its Privacy Policy and Terms,
+        including any fees if applicable. Splitwise charges no additional fees.
+    </small>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="closePaymentModal()">Cancel</button>
+</div>
+
+<!-- New Modal for Recording Payment -->
+<ng-template #settleUpModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Settle up</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <p style="font-size: large; font-weight: 700;">
+            You paid:
+            <span class="recipient-name" (click)="showRecipientDropdown()">
+                <strong *ngIf="recipient; else selectText">{{ recipient }}</strong>
+                <ng-template #selectText>
+                    <strong class="select-recipient">Choose a recipient</strong>
+                </ng-template>
+            </span>
+        </p>
+        <h3>INR <input type="number" [(ngModel)]="amount" class="amount-input" min="0" placeholder="Enter amount" /></h3>
+        <input type="date" [(ngModel)]="date" class="form-control" />
+        <input type="text" placeholder="Add image/notes" class="form-control mt-2" />
+        <p *ngIf="groupName; else noGroup" style="font-weight: 700;">Group: {{ groupName }}</p>
+        <ng-template #noGroup>
+            <p>No group</p>
+        </ng-template>
+
+        <!-- Dropdown for selecting recipients -->
+        <div class="recipient-dropdown" *ngIf="showDropdown">
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let person of memberNames" (click)="selectRecipient(person)">
+                    {{ person }}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="savePayment()" [disabled]="!recipient">Save</button>
+    </div>
+</ng-template>
