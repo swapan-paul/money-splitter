@@ -1,91 +1,91 @@
 <div class="container-fluid registration-page">
-<div class="row min-vh-100 ">
-    <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center registration-image">
-        <img src="../../../assets/logo/images.png" alt="App Promotion" class="img-fluid1">
-    </div>
+    <div class="row min-vh-100 ">
+        <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center registration-image">
+            <img src="../../../assets/logo/images.png" alt="App Promotion" class="img-fluid1">
+        </div>
 
-    <div class="col-lg-6 d-flex align-items-center justify-content-center">
-        <div class="registration-container">
-            <div class="registration-logo text-center d-lg-none">
-                <img src="../../../assets/logo/images.png" alt="App Logo" class="img-fluid">
+        <div class="col-lg-6 d-flex align-items-center justify-content-center">
+            <div class="registration-container">
+                <div class="registration-logo text-center d-lg-none">
+                    <img src="../../../assets/logo/images.png" alt="App Logo" class="img-fluid">
+                </div>
+
+                <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+                    <h3 class="text-center">Sign Up</h3>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Username" formControlName="username"
+                            aria-label="Username"
+                            [ngClass]="{'is-invalid': registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched }" />
+                        <div *ngIf="registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched"
+                            class="invalid-feedback">
+                            Please enter a valid username.
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        <input type="email" class="form-control" placeholder="Email" formControlName="email"
+                            aria-label="Email"
+                            [ngClass]="{'is-invalid': registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched }" />
+                        <div *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
+                            class="invalid-feedback">
+                            Please enter a valid email.
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Mobile Number" formControlName="mobile"
+                            aria-label="Mobile"
+                            [ngClass]="{'is-invalid': registrationForm.get('mobile')?.invalid && registrationForm.get('mobile')?.touched }" />
+                        <div *ngIf="registrationForm.get('mobile')?.invalid && registrationForm.get('mobile')?.touched"
+                            class="invalid-feedback">
+                            Please enter a valid mobile number.
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input type="password" class="form-control" placeholder="Password" formControlName="password"
+                            aria-label="Password"
+                            [ngClass]="{'is-invalid': registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched }" />
+                        <div *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched"
+                            class="invalid-feedback">
+                            Password must be at least 6 characters.
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input type="password" class="form-control" placeholder="Confirm Password"
+                            formControlName="confirmPassword" aria-label="Confirm Password"
+                            [ngClass]="{'is-invalid': registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched }" />
+                        <div *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched"
+                            class="invalid-feedback">
+                            Passwords must match.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" [disabled]="registrationForm.invalid">Sign
+                        Up</button>
+
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a routerLink="/login" class="text-decoration-none">Log In</a></p>
+                    </div>
+                </form>
             </div>
-
-            <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-                <h3 class="text-center">Sign Up</h3>
-
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    </div>
-                    <input type="text" class="form-control" placeholder="Username" formControlName="username"
-                        aria-label="Username"
-                        [ngClass]="{'is-invalid': registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched }" />
-                    <div *ngIf="registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched"
-                        class="invalid-feedback">
-                        Please enter a valid username.
-                    </div>
-                </div>
-
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                    </div>
-                    <input type="email" class="form-control" placeholder="Email" formControlName="email"
-                        aria-label="Email"
-                        [ngClass]="{'is-invalid': registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched }" />
-                    <div *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
-                        class="invalid-feedback">
-                        Please enter a valid email.
-                    </div>
-                </div>
-
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                    </div>
-                    <input type="text" class="form-control" placeholder="Mobile Number" formControlName="mobile"
-                        aria-label="Mobile"
-                        [ngClass]="{'is-invalid': registrationForm.get('mobile')?.invalid && registrationForm.get('mobile')?.touched }" />
-                    <div *ngIf="registrationForm.get('mobile')?.invalid && registrationForm.get('mobile')?.touched"
-                        class="invalid-feedback">
-                        Please enter a valid mobile number.
-                    </div>
-                </div>
-
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    </div>
-                    <input type="password" class="form-control" placeholder="Password" formControlName="password"
-                        aria-label="Password"
-                        [ngClass]="{'is-invalid': registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched }" />
-                    <div *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched"
-                        class="invalid-feedback">
-                        Password must be at least 6 characters.
-                    </div>
-                </div>
-
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    </div>
-                    <input type="password" class="form-control" placeholder="Confirm Password"
-                        formControlName="confirmPassword" aria-label="Confirm Password"
-                        [ngClass]="{'is-invalid': registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched }" />
-                    <div *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched"
-                        class="invalid-feedback">
-                        Passwords must match.
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block" [disabled]="registrationForm.invalid">Sign
-                    Up</button>
-
-                <div class="text-center mt-3">
-                    <p>Already have an account? <a routerLink="/login" class="text-decoration-none">Log In</a></p>
-                </div>
-            </form>
         </div>
     </div>
-</div>
 </div>

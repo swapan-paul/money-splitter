@@ -60,10 +60,8 @@ export class AllExpensesViewComponent implements OnInit {
         }
       });
 
-      // Calculate net balance
       const netBalance = totalPaid - this.totalOwes;
 
-      // Get the payment amount for the member from the paymentDetails array
       const paymentDetail = paymentDetails.find((detail: any) => detail.memberId === memberId);
       const paymentAmount = paymentDetail ? paymentDetail.amount : 0;
 
@@ -77,10 +75,9 @@ export class AllExpensesViewComponent implements OnInit {
         balanceText = `has no balance`;
       }
 
-      // Format the output string
       return `${memberData.memberName} paid INR ${paymentAmount} and ${balanceText}`;
     }
-    return 'Member not found'; // Return a fallback if member data is invalid
+    return 'Member not found';
   }
 
 
@@ -96,10 +93,8 @@ export class AllExpensesViewComponent implements OnInit {
     const payers = expense.payersData;
 
     if (payers.length === 1) {
-      // If only one person paid, show their name
       return `${payers[0].memberName} paid`;
     } else if (payers.length > 1) {
-      // If more than one person paid, show the number of people who paid
       return `${payers.length} people paid`;
     } else {
       return 'you paid';
@@ -112,11 +107,11 @@ export class AllExpensesViewComponent implements OnInit {
     modalRef.result.then(
       (result: any) => {
         if (result) {
-          this.deleteExpense(expenseId); // Call delete function if confirmed
+          this.deleteExpense(expenseId);
         }
       },
       (reason: any) => {
-        console.log(`Dismissed: ${reason}`); // Handle dismiss action
+        console.log(`Dismissed: ${reason}`);
       }
     );
   }
@@ -128,7 +123,6 @@ export class AllExpensesViewComponent implements OnInit {
     if (confirmDelete) {
       this.dataService.deleteExpenseById(expenseId).subscribe({
         next: () => {
-          // this.loadExpenses(); // Refresh the list of expenses
         },
         error: (error) => {
           console.error('Error deleting expense:', error);
@@ -140,26 +134,23 @@ export class AllExpensesViewComponent implements OnInit {
   }
 
   openEditModal(expenseId: string) {
-    const modalRef = this.modalService.open(AddExpenseModalComponent); // Open your edit modal
-    modalRef.componentInstance.expenseId = expenseId; // Pass the expenseId to the modal
+    const modalRef = this.modalService.open(AddExpenseModalComponent);
+    modalRef.componentInstance.expenseId = expenseId;
   }
 
   openExpensesModal() {
     const modalRef = this.modalService.open(AddExpenseModalComponent, { size: 'lg' });
 
-    // Correct way to pass selectedGroup to modal
     if (this.selectedGroup) {
       console.log('this.selectedGroup+++++++', this.selectedGroup);
-      modalRef.componentInstance.selectedGroup = this.selectedGroup;  // Pass the selectedGroup instance to the modal
+      modalRef.componentInstance.selectedGroup = this.selectedGroup;
     }
 
-    // When the modal closes, get the result (the expense) and add it to the list
     modalRef.result.then(
       (expense: any) => {
         if (expense) {
           // this.expenses.push(expense);
           // console.log('Expense added:', this.expenses);
-          // console.log('Expense&&&&&&&&&&&&&&&&&&&&&:', expense);
         }
       },
       (dismissed) => {

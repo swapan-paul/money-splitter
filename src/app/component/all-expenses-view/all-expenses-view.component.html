@@ -1,6 +1,5 @@
 <ng-content></ng-content>
 <div class="container mt-4">
-    <!-- Check if ExpenseData has content -->
     <div *ngIf="ExpenseData && ExpenseData.length > 0; else noDataTemplate">
         <div class="accordion" id="expenseAccordion">
             <div class="accordion-item" *ngFor="let expense of ExpenseData; let i = index">
@@ -39,7 +38,6 @@
                             </div>
                         </div>
 
-                        <!-- Expense Balance Details -->
                         <div *ngIf="expense">
                             <h6 class="text-info">Expense Breakdown</h6>
                             <div class="expense-balances">
@@ -55,13 +53,14 @@
         </div>
     </div>
 
-    <!-- No Data Found Message -->
     <ng-template #noDataTemplate>
         <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
             <div class="card text-center p-4">
                 <div class="card-body">
-                    <h5 class="card-title">No Expenses Found</h5>
-                    <p class="card-text">There are no expenses to display right now. Add an expense to see it here.</p>
+<h5 class="card-title">No Expenses Available</h5>
+<p class="card-text">Currently, there are no expenses to display. Please select an existing group or create a new one,
+    then add an expense to view it here.</p>
+
                 </div>
             </div>
         </div>

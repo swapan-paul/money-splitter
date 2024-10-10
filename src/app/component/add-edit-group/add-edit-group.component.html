@@ -17,16 +17,6 @@
                 required</small>
         </div>
 
-        <!-- <div class="form-group">
-            <label for="groupType">Description <span class="text-danger">*</span></label>
-            <textarea id="groupType" class="form-control" formControlName="groupType" rows="3"
-                placeholder="Enter group groupType"></textarea>
-            <small class="text-danger"
-                *ngIf="groupForm.get('groupType')?.invalid && groupForm.get('groupType')?.touched">Description
-                is required</small>
-        </div> -->
-
-
         <div class="form-group">
             <label>Group Members <span class="text-danger">*</span></label>
             <div formArrayName="members">
@@ -57,11 +47,6 @@
                 Group is required
             </small>
         </div>
-
-
-
-        <!-- <button *ngIf="selectedGroup != ''" class="btn btn-success" [disabled]="groupForm.invalid || !hasChanges"
-            (click)="editGroup()">Edit</button> -->
 
         <button *ngIf="selectedGroup == ''" class="btn btn-success" [disabled]="groupForm.invalid "
             (click)="onSubmit()">Submit</button>

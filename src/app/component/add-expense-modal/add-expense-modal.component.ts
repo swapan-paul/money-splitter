@@ -24,22 +24,18 @@ export class AddExpenseModalComponent implements OnInit {
   isNgSelectVisible: boolean = false;
   groupCreatedBy: any;
   groupCreaterUid: any;
-  selectedGroupData: any = null;  
+  selectedGroupData: any = null;
   filteredMembers: any;
   anotherFilterGroup: any[] = [];
+  perPerson: any;
 
   constructor(public activeModal: NgbActiveModal,
     private fb: FormBuilder,
     private dataService: DataService,
     private modalService: NgbModal) {
 
-
-      
     this.groupCreatedBy = localStorage.getItem('userName') || '';
     this.groupCreaterUid = localStorage.getItem('uId') || '';
-
-
-
     this.expenseForm = this.fb.group({
       withYou: [[], Validators.required],
       description: ['', Validators.required],
@@ -55,12 +51,28 @@ export class AddExpenseModalComponent implements OnInit {
       expenseIcon: [''],
       selectedGroupControl: [this.selectedGroup?.groupTitle || '', Validators.required]
     });
+
+    this.expenseForm.valueChanges.subscribe(() => {
+      this.calculatePerPersonAmount();
+    });
+
+  }
+
+  calculatePerPersonAmount() {
+    const amount = this.expenseForm.get('amount')?.value;
+    const withYouArray = this.expenseForm.get('withYou')?.value;
+
+    if (amount && Array.isArray(withYouArray) && withYouArray.length > 0) {
+      this.perPerson = amount / withYouArray.length;
+      // console.log('Per person amount:', this.perPerson);
+    } else {
+      // console.log('Please enter a valid amount and select people to split the expense.');
+    }
   }
 
   ngOnInit(): void {
 
     console.log('Selected group!!!!!!!!!!!:', this.selectedGroup);
-    // Automatically select all members if none are selected
     if (!this.selectedMembers || this.selectedMembers.length === 0) {
       this.setAllMembers();
     }
@@ -68,11 +80,9 @@ export class AddExpenseModalComponent implements OnInit {
 
     console.log('allGroup=======>>>', this.allGroup);
 
-    // Remove selectedGroupControl if selectedView is 'group'
     if (this.selectedView === 'group') {
       this.expenseForm.removeControl('selectedGroupControl');
     } else {
-      // Subscribe to changes in the selectedGroupControl
       this.expenseForm.get('selectedGroupControl')?.valueChanges.subscribe((selectedGroupData) => {
         this.onGroupSelect(selectedGroupData);
       });
@@ -81,10 +91,9 @@ export class AddExpenseModalComponent implements OnInit {
 
 
 
-  // Function to handle group selection
   onGroupSelect(selectedGroupData: any) {
-    this.selectedGroupData = selectedGroupData; // Set the selected group
-    console.log('Selected group:', this.selectedGroupData);
+    this.selectedGroupData = selectedGroupData;
+    // console.log('Selected group:', this.selectedGroupData);
     this.selectedGroup = this.selectedGroupData;
 
     this.setAllMembers();
@@ -101,8 +110,6 @@ export class AddExpenseModalComponent implements OnInit {
     // this.filterMembers();
   }
 
-  
-
   // filterMembers() {
   //   if (this.selectedGroup && this.selectedGroup.members) {
   //     // Deep copy the members array to avoid mutations
@@ -116,26 +123,23 @@ export class AddExpenseModalComponent implements OnInit {
   //     console.log('this.anotherFilterGroup--------', this.anotherFilterGroup);
   //   }
   // }
-
-
   saveExpense() {
 
-    if (this.selectedGroup){
-      this.expenseForm.patchValue({ groupId: this.selectedGroup?.groupId || '',
+    if (this.selectedGroup) {
+      this.expenseForm.patchValue({
+        groupId: this.selectedGroup?.groupId || '',
         groupTitle: this.selectedGroup?.groupTitle || '',
         groupCreaterUid: this.selectedGroup?.groupCreaterUid || this.groupCreaterUid || '',
         groupCreatedBy: this.selectedGroup?.groupCreatedBy || this.groupCreatedBy || '',
         payersData: this.payersData,
         expenseIcon: this.imageSrc || '',
-       });
+      });
 
     }
 
-    // Automatically select all members if none are selected before saving
     if (!this.expenseForm.get('withYou')?.value || this.expenseForm.get('withYou')?.value.length === 0) {
       this.setAllMembers();
     }
-    // if payerData modal not open defalt save total amount
     if (!this.expenseForm.get('payersData')?.value || this.expenseForm.get('payersData')?.value.length === 0) {
       this.payersData.push({
         amount: this.expenseForm.value.amount,
@@ -147,11 +151,11 @@ export class AddExpenseModalComponent implements OnInit {
 
     if (this.expenseForm.valid) {
       const expenseData = this.expenseForm.value;
-      console.log('Expense data:', expenseData);
+      // console.log('Expense data:', expenseData);
 
       this.dataService.addExpense(expenseData).subscribe(
         (response: any) => {
-         
+
           console.log('Expenses added successfully:', response)
 
           this.dataService.calculateBalancesForGroup(this.selectedGroup?.groupId);
@@ -178,6 +182,9 @@ export class AddExpenseModalComponent implements OnInit {
       party: 'assets/logo/party.png',
       ticket: 'assets/logo/ticket.png',
       movie: 'assets/logo/ticket.png',
+      pooja: 'assets/logo/pooja.png',
+      travel: 'assets/logo/travel.png',
+      trip: 'assets/logo/trip.png',
     };
     return images[description.toLowerCase()] || 'assets/logo/ticket.png';
   }
@@ -192,32 +199,28 @@ export class AddExpenseModalComponent implements OnInit {
     );
 
     filteredMembers = [...filteredMembers,
-    //   {
-    //   memberId: this.selectedGroup.groupCreaterUid,
-    //   memberName: this.selectedGroup.groupCreatedBy,
-    //   groupCreater: true
-    // }
-  ];
+      //   {
+      //   memberId: this.selectedGroup.groupCreaterUid,
+      //   memberName: this.selectedGroup.groupCreatedBy,
+      //   groupCreater: true
+      // }
+    ];
 
     const modalRef = this.modalService.open(PayerModalComponent, { size: 'lg' });
     modalRef.componentInstance.allPayers = this.selectedMembers == undefined ? this.selectedGroup : filteredMembers;
     modalRef.componentInstance.totalExpenseAmount = this.expenseForm.value.amount
 
     modalRef.result.then((result: any) => {
-
-      // alert()
       if (result.length !== 0) {
-        // alert('if')
         this.payersData = result;
         console.log('Payers Data:', result);
-      }else{
-        // alert('else')
+      } else {
         this.payersData.push({
           amount: this.expenseForm.value.amount,
-          groupCreater:true,
+          groupCreater: true,
           memberId: this.selectedGroup.groupCreaterUid,
           memberName: this.selectedGroup.groupCreatedBy,
-})
+        })
       }
     }, (reason: any) => {
       console.log('Dismissed');

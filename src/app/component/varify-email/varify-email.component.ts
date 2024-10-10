@@ -18,15 +18,13 @@ export class VarifyEmailComponent implements OnInit, OnDestroy {
   }
 
   monitorEmailVerification(): void {
-    // Poll the Firebase user object every 5 seconds to check if the email is verified
     this.emailVerificationSubscription = interval(5000).subscribe(() => {
       this.fireauth.currentUser.then(user => {
         if (user) {
           user.reload().then(() => {
             if (user.emailVerified) {
-              // If the email is verified, redirect to the login page or dashboard
               alert('Email verified successfully!');
-              this.router.navigate(['/login']);  // or navigate to the dashboard if needed
+              this.router.navigate(['/login']);
             }
           });
         }
@@ -35,7 +33,6 @@ export class VarifyEmailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Cleanup the subscription when the component is destroyed
     if (this.emailVerificationSubscription) {
       this.emailVerificationSubscription.unsubscribe();
     }

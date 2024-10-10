@@ -1,4 +1,3 @@
-<!-- Choose Payment Method Modal -->
 <div class="modal-header">
     <h4 class="modal-title">Choose Payment Method</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="closePaymentModal()"></button>
@@ -19,7 +18,6 @@
     <button type="button" class="btn btn-secondary" (click)="closePaymentModal()">Cancel</button>
 </div>
 
-<!-- New Modal for Recording Payment -->
 <ng-template #settleUpModal let-modal>
     <div class="modal-header">
         <h4 class="modal-title">Settle up</h4>
@@ -35,7 +33,8 @@
                 </ng-template>
             </span>
         </p>
-        <h3>INR <input type="number" [(ngModel)]="amount" class="amount-input" min="0" placeholder="Enter amount" /></h3>
+        <h3>INR <input type="number" [(ngModel)]="amount" class="amount-input" min="0" placeholder="Enter amount" />
+        </h3>
         <input type="date" [(ngModel)]="date" class="form-control" />
         <input type="text" placeholder="Add image/notes" class="form-control mt-2" />
         <p *ngIf="groupName; else noGroup" style="font-weight: 700;">Group: {{ groupName }}</p>
@@ -43,7 +42,6 @@
             <p>No group</p>
         </ng-template>
 
-        <!-- Dropdown for selecting recipients -->
         <div class="recipient-dropdown" *ngIf="showDropdown">
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let person of memberNames" (click)="selectRecipient(person)">

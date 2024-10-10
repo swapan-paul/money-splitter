@@ -69,13 +69,11 @@ export class AuthService {
   logout(): Observable<any> {
 
     return from(this.fireauth.signOut().then(() => {
-      // Clear any stored user session or tokens
       localStorage.removeItem('token');
       localStorage.removeItem('userToken');
       localStorage.removeItem('userName');
       localStorage.removeItem('uId');
 
-      // Navigate to login after signout
       this.router.navigate(['/login']);
     }).catch(err => {
       // Handle error

@@ -8,7 +8,6 @@
 <div class="modal-body">
     <form [formGroup]="expenseForm">
 
-        <!-- Informational Note -->
         <p class="text-muted" style="font-size: 0.9em;">
             Please select a group for the expenses. If you don't have one, consider creating a new group.
         </p>
@@ -17,20 +16,19 @@
             <label for="group-select" class="form-label">
                 Group <span class="text-danger">*</span>
             </label>
-        
-            <!-- Show button if selectedGroup is available -->
+
             <button *ngIf="selectedView == 'group'" type="button" class="btn btn-outline-secondary">
                 {{ selectedGroup?.groupTitle }}
             </button>
-        
-            <!-- Show dropdown if selectedGroup is not available -->
+
             <select *ngIf="selectedView !== 'group'" class="form-select" formControlName="selectedGroupControl">
                 <option [ngValue]="null" disabled>Select a Group</option>
                 <option *ngFor="let group of allGroup" [ngValue]="group">
                     {{ group.groupTitle }}
                 </option>
             </select>
-            <div *ngIf="expenseForm.get('selectedGroupControl')?.touched && expenseForm.get('selectedGroupControl')?.invalid" class="text-danger">
+            <div *ngIf="expenseForm.get('selectedGroupControl')?.touched && expenseForm.get('selectedGroupControl')?.invalid"
+                class="text-danger">
                 Group is required....
             </div>
         </div>
@@ -45,15 +43,13 @@
                     {{ selectedGroup ? selectedGroup.groupTitle + "'s all members" : 'Select group members' }}
                 </span>
 
-                <ng-select *ngIf="isNgSelectVisible" #ngSelectRef 
-                    [items]="selectedGroup?.members"
+                <ng-select *ngIf="isNgSelectVisible" #ngSelectRef [items]="selectedGroup?.members"
                     bindLabel="memberName" bindValue="memberId" [(ngModel)]="selectedMembers" [multiple]="true"
-                    formControlName="withYou" class="form-control" >
+                    formControlName="withYou" class="form-control">
                 </ng-select>
             </div>
         </div>
 
-        <!-- Validation message for 'withYou' -->
         <div *ngIf="expenseForm.get('withYou')?.touched && expenseForm.get('withYou')?.invalid" class="text-danger">
             Please select group members.
         </div>
@@ -69,7 +65,6 @@
             </div>
         </div>
 
-        <!-- Validation message for 'description' -->
         <div *ngIf="expenseForm.get('description')?.touched && expenseForm.get('description')?.invalid"
             class="text-danger">
             Description is required.
@@ -81,7 +76,6 @@
                 style="font-size: 1.5em; font-weight: bold;">
         </div>
 
-        <!-- Validation messages for 'amount' -->
         <div *ngIf="expenseForm.get('amount')?.touched && expenseForm.get('amount')?.invalid" class="text-danger">
             <div *ngIf="expenseForm.get('amount')?.errors?.required">Amount is required.</div>
             <div *ngIf="expenseForm.get('amount')?.errors?.pattern">Please enter a valid amount.</div>
@@ -94,7 +88,7 @@
                 </button>
                 and split equally
             </label>
-            <p class="text-muted mt-2">($0.00/person)</p>
+            <p class="text-muted mt-2">(${{perPerson ? perPerson : 0.00}}/person)</p>
         </div>
 
         <div class="form-group">
@@ -102,14 +96,13 @@
             <input type="date" class="form-control" formControlName="date">
         </div>
 
-        <!-- Validation message for 'date' -->
         <div *ngIf="expenseForm.get('date')?.touched && expenseForm.get('date')?.invalid" class="text-danger">
             Date is required.
         </div>
 
         <div class="form-group">
             <label>Add notes</label>
-            <input type="text" class="form-control" placeholder="Add your notes here..." formControlName="notes" >
+            <input type="text" class="form-control" placeholder="Add your notes here..." formControlName="notes">
         </div>
 
     </form>

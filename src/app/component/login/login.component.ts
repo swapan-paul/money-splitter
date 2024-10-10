@@ -10,39 +10,6 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-//   email : string = '';
-//   password : string = '';
-
-//   constructor(private auth : AuthService) { }
-
-//   ngOnInit(): void {
-//   }
-
-//   login() {
-
-//     if(this.email == '') {
-//       alert('Please enter email');
-//       return;
-//     }
-
-//     if(this.password == '') {
-//       alert('Please enter password');
-//       return;
-//     }
-
-//     this.auth.login(this.email,this.password);
-    
-//     this.email = '';
-//     this.password = '';
-
-//   }
-
-//   signInWithGoogle() {
-//     this.auth.googleSignIn();
-//   }
- 
-// }
-
   loginForm: FormGroup;
   errorMessage: any;
 
@@ -65,19 +32,7 @@ export class LoginComponent implements OnInit {
 
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      this.authService.login(email, password)
-    // .subscribe(
-    //     (res: any) => {
-    //       console.log('Login successful', res);
-    //       this.router.navigate(['/dashboard']);
-    //     },
-    //     (err:any) => {
-    //       console.error('Login error', err);
-    //       this.errorMessage = 'Invalid login credentials. Please try again.';
-    //     }
-    //   );
-    // } else {
-    //   this.errorMessage = 'Please fill in all required fields correctly.';
+      this.authService.login(email, password);
     }
   }
 
@@ -85,7 +40,7 @@ export class LoginComponent implements OnInit {
 
   signInWithGoogle() {
     this.authService.googleSignIn();
-      }
+  }
 
 
 

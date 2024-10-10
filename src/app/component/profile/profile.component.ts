@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.groupCreaterUid = localStorage.getItem('uId') || '';
   }
 
@@ -60,13 +60,13 @@ export class ProfileComponent implements OnInit {
     const reader = new FileReader();
     const file = event.target.files && event.target.files.length ? event.target.files[0] : null;
 
-    if (file) { // Check if the file is not null
+    if (file) {
       this.selectedFile = file;
       this.uploadProfileImage(this.selectedFile);
       reader.onload = () => {
-        this.profileImageUrl = reader.result; // Set the image preview
+        this.profileImageUrl = reader.result;
       };
-      reader.readAsDataURL(file); // Read the file as a Data URL for preview
+      reader.readAsDataURL(file);
     } else {
       console.error('No file selected.');
     }
@@ -74,17 +74,15 @@ export class ProfileComponent implements OnInit {
 
 
   saveChanges() {
-    // Check if a new image is uploaded
     if (this.selectedFile) {
       this.uploadProfileImage(this.selectedFile);
     } else {
       this.updateUserProfile();
     }
   }
-  
+
   uploadProfileImage(file: File | null) {
-    if (file) { 
-      // alert()
+    if (file) {
       const filePath = `profile-images/${this.groupCreaterUid}_${file.name}`;
       const fileRef = this.storage.ref(filePath);
       const task = this.storage.upload(filePath, file);
@@ -92,7 +90,6 @@ export class ProfileComponent implements OnInit {
       task.snapshotChanges().pipe(
         finalize(() => {
           fileRef.getDownloadURL().subscribe((url) => {
-            // Save the download URL in Firestore after successful upload
             this.user.profileImageUrl = url;
             this.updateUserProfile();
           });
@@ -110,15 +107,12 @@ export class ProfileComponent implements OnInit {
         if (res.success) {
           this.resetEditMode();
           console.log(res.message);
-          // Handle success, e.g., show a success message or navigate to another page
         } else {
           console.error(res.message);
-          // Handle failure, e.g., show an error message to the user
         }
       })
       .catch((error) => {
         console.error('Unexpected error: ', error);
-        // Handle unexpected errors
       });
 
   }
@@ -137,7 +131,6 @@ export class ProfileComponent implements OnInit {
   }
 
   logout() {
-    alert(1)
     this.authService.logout().subscribe(() => {
       this.router.navigate(['/login']);
       this.activeModal.dismiss();

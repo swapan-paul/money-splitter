@@ -14,7 +14,7 @@ export class ConfirmationModalComponent implements OnInit {
   }
 
   confirmDelete() {
-    this.activeModal.close(true); // Return true on confirmation
+    this.activeModal.close(true);
   }
 }
 

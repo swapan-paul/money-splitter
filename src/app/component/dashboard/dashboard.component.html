@@ -97,9 +97,6 @@
 
                 </div>
             </app-dashboard-view>
-
-
-
             <app-all-expenses-view *ngIf="selectedView === 'allExpenses'" [ExpenseData]="allExpense" [friend]=""
                 [selectedGroup]="selectedGroupDetail" [allGroup]="">
 
@@ -127,7 +124,6 @@
 
                 </div>
             </app-all-expenses-view>
-
             <app-all-expenses-view *ngIf="selectedView === 'group'" [ExpenseData]="allExpenseDataByGroupId" [friend]=""
                 [allGroup]="">
                 <div class="col-row d-flex justify-content-between align-items-center header-container">
@@ -153,8 +149,19 @@
                     <button class="settle-style btn btn-danger ms-2" (click)="openPaymentModal()">Settle up</button>
 
                 </div>
-            </app-all-expenses-view>
+                <div *ngIf="isMobileView">
 
+                    <div>
+                        <select id="groups-select" class="form-select mt-3" [(ngModel)]="selectedGroupData"
+                            (change)="onGroupSelect(selectedGroupData)">
+                            <option *ngFor="let group of featureGroupsData" [ngValue]="group">
+                                {{ group.groupTitle }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+            </app-all-expenses-view>
             <app-all-expenses-view *ngIf="selectedView === 'friend'" [friend]="selectedFriend" [allGroup]=""
                 [ExpenseData]="allExpenseDataByMemberId">
                 <div class="col-row d-flex justify-content-between align-items-center header-container">
@@ -180,6 +187,17 @@
                     <button class="settle-style btn btn-danger ms-2" (click)="openPaymentModal()">Settle up</button>
 
                 </div>
+
+                <div *ngIf="isMobileView">
+                    <div>
+                        <select id="groups-select" class="form-select mt-3" [(ngModel)]="selectedFeiendData"
+                            (change)="onFriendSelect(selectedFeiendData)">
+                            <option *ngFor="let friend of allFriendsData" [ngValue]="friend">
+                                {{ friend.memberName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
             </app-all-expenses-view>
         </main>
     </div>
@@ -196,43 +214,17 @@
                 role="tab" aria-controls="all-expenses" aria-selected="false">All Expenses</a>
         </li>
         <li class="nav-item flex-fill" role="presentation">
-            <a class="nav-link" id="groups-tab" data-bs-toggle="tab" href="#groups" role="tab" aria-controls="group"
-                aria-selected="false">Groups</a>
+            <a class="nav-link" id="groups-tab" (click)="selectView('group')" data-bs-toggle="tab" role="tab"
+                aria-controls="group" aria-selected="false">Groups</a>
         </li>
         <li class="nav-item flex-fill" role="presentation">
-            <a class="nav-link" id="friends-tab" data-bs-toggle="tab" href="#friends" role="tab" aria-controls="friend"
-                aria-selected="false">Friends</a>
+            <a class="nav-link" id="friends-tab" data-bs-toggle="tab" (click)="selectView('friend')" role="tab"
+                aria-controls="friend" aria-selected="false">Friends</a>
         </li>
     </ul>
 </div>
 
 <div class="tab-content">
     <div class="tab-pane fade show active" id="all-expenses" role="tabpanel" aria-labelledby="all-expenses-tab">
-    </div>
-    <div class="tab-pane fade" id="groups" role="tabpanel" aria-labelledby="groups-tab">
-        <div class="container">
-            <h5 class="mt-4">GROUPS</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item" *ngFor="let group of featureGroupsData">
-                    <span class="nav-link group-s clickable" (click)="selectView('group', group)"
-                        style="cursor: pointer;">
-                        <i class="fas fa-users"></i> {{ group.groupTitle }}
-                    </span>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
-        <div class="container">
-            <h5 class="mt-4">FRIENDS</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item" *ngFor="let friend of allFriendsData">
-                    <span class="nav-link group-s clickable" (click)="selectView('friend', friend)"
-                        style="cursor: pointer;">
-                        <i class="fas fa-user"></i> {{ friend.memberName }}
-                    </span>
-                </li>
-            </ul>
-        </div>
     </div>
 </div>

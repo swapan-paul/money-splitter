@@ -193,11 +193,12 @@
 .scrollable-section:hover {
     overflow-y: auto;
 }
-.profile-image{
+
+.profile-image {
     width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .header-container {
@@ -205,11 +206,11 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-        padding: 20px;
-        background-color: #4db6ac;
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: #4db6ac;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .profile-image {
@@ -219,24 +220,18 @@
     object-fit: cover;
 }
 
-/* .button-group {
-    display: flex;
-    justify-content: flex-start;
-} */
-
 @media (max-width: 768px) {
 
-    /* Mobile View */
     .header-container {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
         width: 100%;
-            padding: 20px;
-            background-color: #4db6ac;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        background-color: #4db6ac;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .button-group {
@@ -247,7 +242,6 @@
 
     .button-group button {
         margin-bottom: 10px;
-        /* Adds space between buttons on mobile */
         width: 100%;
     }
 
@@ -263,11 +257,11 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-        padding: 20px;
-        background-color: #4db6ac;
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: #4db6ac;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -277,21 +271,19 @@
     justify-content: flex-start;
 }
 
-/* Only change the layout on mobile screens */
 @media (max-width: 768px) {
 
-    /* Mobile View */
     .header-container {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
         width: 100%;
-            padding: 20px;
-            background-color: #4db6ac;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        
+        padding: 20px;
+        background-color: #4db6ac;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
     }
 
     .button-group {
@@ -302,9 +294,7 @@
 
     .button-group button {
         margin-bottom: 10px;
-        /* Adds space between buttons on mobile */
         width: 100%;
-        /* Makes buttons full width */
     }
 
     .profile-image {
