@@ -151,13 +151,18 @@
                 </div>
                 <div *ngIf="isMobileView">
 
-                    <div>
-                        <select id="groups-select" class="form-select mt-3" [(ngModel)]="selectedGroupData"
-                            (change)="onGroupSelect(selectedGroupData)">
-                            <option *ngFor="let group of featureGroupsData" [ngValue]="group">
-                                {{ group.groupTitle }}
-                            </option>
-                        </select>
+                    <div class="row d-flex">
+                        <div class="col-2" >
+                            <p class="para-style">Group:</p>
+                        </div>
+                        <div class="col-9">
+                            <select id="groups-select" class="form-select mt-3" [(ngModel)]="selectedGroupData"
+                                (change)="onGroupSelect(selectedGroupData)">
+                                <option *ngFor="let group of featureGroupsData" [ngValue]="group">
+                                    {{ group.groupTitle }}
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -190,12 +195,19 @@
 
                 <div *ngIf="isMobileView">
                     <div>
+                        <div class="row d-flex">
+                            <div class="col-2">
+                                <p class="para-style">Friends:</p>
+                            </div>
+                            <div class="col-9">
                         <select id="groups-select" class="form-select mt-3" [(ngModel)]="selectedFeiendData"
                             (change)="onFriendSelect(selectedFeiendData)">
                             <option *ngFor="let friend of allFriendsData" [ngValue]="friend">
                                 {{ friend.memberName }}
                             </option>
                         </select>
+                    </div>
+                    </div>
                     </div>
                 </div>
             </app-all-expenses-view>

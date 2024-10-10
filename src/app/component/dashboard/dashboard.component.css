@@ -306,3 +306,10 @@
 .settle-style {
     margin-right: 8px !important;
 }
+.para-style {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-top: 21px;
+    font-size: 15px;
+    font-weight: 500;
+}
