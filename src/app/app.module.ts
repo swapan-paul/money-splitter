@@ -23,6 +23,7 @@ import { ConfirmationModalComponent } from './component/confirmation-modal/confi
 import { AllExpensesViewComponent } from './component/all-expenses-view/all-expenses-view.component';
 import { PaymentModalComponent } from './component/payment-modal/payment-modal.component';
 import { ProfileComponent } from './component/profile/profile.component';
+import { InviteFriendsComponent } from './component/invite-friends/invite-friends.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { ProfileComponent } from './component/profile/profile.component';
     AllExpensesViewComponent,
     PaymentModalComponent,
     ProfileComponent,
+    InviteFriendsComponent,
   ],
   imports: [
     BrowserModule,

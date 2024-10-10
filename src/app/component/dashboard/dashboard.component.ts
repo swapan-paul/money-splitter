@@ -9,6 +9,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { EmailService } from 'src/app/shared/email/email.service';
 import { PaymentModalComponent } from '../payment-modal/payment-modal.component';
 import { ProfileComponent } from '../profile/profile.component';
+import { InviteFriendsComponent } from '../invite-friends/invite-friends.component';
 
 
 @Component({
@@ -124,6 +125,29 @@ export class DashboardComponent implements OnInit {
 
   openExpensesModal() {
     const modalRef = this.modalService.open(AddExpenseModalComponent, { size: 'lg' });
+
+    if (this.selectedGroup, this.featureGroupsData) {
+      // console.log('this.selectedGroup+++++++', this.selectedGroup);
+      modalRef.componentInstance.selectedGroup = this.selectedGroup;
+      modalRef.componentInstance.allGroup = this.featureGroupsData;
+      modalRef.componentInstance.selectedView = this.selectedView;
+    }
+
+    modalRef.result.then(
+      (expense: any) => {
+        if (expense) {
+          // this.expenses.push(expense);
+        }
+      },
+      (dismissed) => {
+        console.log('Modal dismissed');
+      }
+    );
+  }
+
+
+  inviteFriend() {
+    const modalRef = this.modalService.open(InviteFriendsComponent, { size: 'sm' });
 
     if (this.selectedGroup, this.featureGroupsData) {
       // console.log('this.selectedGroup+++++++', this.selectedGroup);

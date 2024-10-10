@@ -78,6 +78,8 @@
                         <i [ngClass]="mainIcon" class="me-2"></i>
                         {{ mainTitle }}
                     </h1>
+                    <button class="btn btn-sm btn-debug" (click)="inviteFriend()"><i class="fa fa-user-plus" aria-hidden="true"></i>Invite friend</button>
+
 
                     <div *ngIf="!isMobileView">
                         <button type="button" class="btn btn-success ps-5 pe-5" (click)="openExpensesModal()">Add an
@@ -86,7 +88,7 @@
                             up</button>
                     </div>
 
-                    <img src="{{ user.profileImage }}" alt="" class="profile-image me-4" (click)="openProfileModal()"
+                    <img src="{{ user.profileImage }}" alt="" class="profile-image " (click)="openProfileModal()"
                         style="cursor: pointer;" />
                 </div>
 
@@ -105,6 +107,8 @@
                         <i [ngClass]="mainIcon" class="me-2"></i>
                         {{ mainTitle }}
                     </h1>
+                    <button class="btn btn-sm btn-debug" (click)="inviteFriend()"><i class="fa fa-user-plus" aria-hidden="true"></i>Invite friend</button>
+
 
                     <div *ngIf="!isMobileView">
                         <button type="button" class="btn btn-success ps-5 pe-5" (click)="openExpensesModal()">Add an
@@ -113,7 +117,7 @@
                             up</button>
                     </div>
 
-                    <img src="{{ user.profileImage }}" alt="" class="profile-image me-4" (click)="openProfileModal()"
+                    <img src="{{ user.profileImage }}" alt="" class="profile-image " (click)="openProfileModal()"
                         style="cursor: pointer;" />
                 </div>
 
@@ -131,6 +135,9 @@
                         <i [ngClass]="mainIcon" class="me-2"></i>
                         {{ mainTitle }}
                     </h1>
+                    <button class="btn btn-sm btn-debug" (click)="inviteFriend()"><i class="fa fa-user-plus" aria-hidden="true"></i>Invite friend</button>
+
+
 
                     <div *ngIf="!isMobileView">
                         <button type="button" class="btn btn-success ps-5 pe-5" (click)="openExpensesModal()">Add an
@@ -139,9 +146,12 @@
                             up</button>
                     </div>
 
-                    <img src="{{ user.profileImage }}" alt="" class="profile-image me-4" (click)="openProfileModal()"
+                    <img src="{{ user.profileImage }}" alt="" class="profile-image " (click)="openProfileModal()"
                         style="cursor: pointer;" />
+
+                        
                 </div>
+                
 
                 <div class="mt-3" *ngIf="isMobileView">
                     <button type="button" class="btn btn-success" (click)="openExpensesModal()">Add an expense</button>
@@ -174,6 +184,9 @@
                         <i [ngClass]="mainIcon" class="me-2"></i>
                         {{ mainTitle }}
                     </h1>
+                    <button class="btn btn-sm btn-debug" (click)="inviteFriend()"><i class="fa fa-user-plus" aria-hidden="true"></i>Invite friend</button>
+
+                    
 
                     <div *ngIf="!isMobileView">
                         <button type="button" class="btn btn-success ps-5 pe-5" (click)="openExpensesModal()">Add an
