@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PayerModalComponent } from '../payer-modal/payer-modal.component';
-
+import { DataService } from 'src/app/shared/data.service';
 
 @Component({
   selector: 'app-add-expense-modal',
@@ -11,126 +11,224 @@ import { PayerModalComponent } from '../payer-modal/payer-modal.component';
 })
 export class AddExpenseModalComponent implements OnInit {
 
-//   @Input() expense = {
-//     withWho: '',
-//     description: '',
-//     amount: 0,
-//     paidBy: 'you',
-//     splitMethod: 'equally',
-//     date: '',
-//   };
+  @Input() selectedGroup: any;
+  @Input() expenseId: any;
+  @Input() selectedView: any;
 
-//   constructor(public activeModal: NgbActiveModal) { }
+  @Input() allGroup: any
 
-//   ngOnInit(): void {
-    
-//   }
-
-//   onSubmit(expenseForm: any) {
-//     if (expenseForm.valid) {
-//       console.log('Expense added:', this.expense);
-//       this.activeModal.close(this.expense); // Close the modal and return the expense object
-//     }
-//   }
-
-//   close() {
-//     this.activeModal.dismiss();
-//   }
-// }
-//   description: string = '';
-//   imageSrc: string = '';
-
-//   constructor(public activeModal: NgbActiveModal) { }
-//   ngOnInit(): void {
-    
-//   }
-
-//   // Map of descriptions to image paths
-//   private imageMap: { [key: string]: string } = {
-//     party: 'assets/logo/logo.png', // Path to your party image
-//     movie: 'assets/logo/images.png', // Path to your movie ticket image
-//     // Add more mappings as needed
-//   };
-
-//   updateImage() {
-//     // Normalize the input to lowercase
-//     const lowerCaseDescription = this.description.toLowerCase();
-//     // Set the imageSrc based on the description
-//     this.imageSrc = this.imageMap[lowerCaseDescription] || ''; // Default to empty if no match
-//   }
-
-//   saveExpense() {
-//     // Logic to save the expense
-//     this.activeModal.close();
-//   }
-// }
-
-  @Input() selectedGroup: any; 
   expenseForm: FormGroup;
   imageSrc: any | null = null;
+  payersData: any[] = [];
+  selectedMembers: any[] = [];
+  isNgSelectVisible: boolean = false;
+  groupCreatedBy: any;
+  groupCreaterUid: any;
+  selectedGroupData: any = null;
+  filteredMembers: any;
+  anotherFilterGroup: any[] = [];
+  perPerson: any;
 
-  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder,
-     private modalService: NgbModal) {
+  constructor(public activeModal: NgbActiveModal,
+    private fb: FormBuilder,
+    private dataService: DataService,
+    private modalService: NgbModal) {
+
+    this.groupCreatedBy = localStorage.getItem('userName') || '';
+    this.groupCreaterUid = localStorage.getItem('uId') || '';
     this.expenseForm = this.fb.group({
-      withYou: ['', Validators.required],
+      withYou: [[], Validators.required],
       description: ['', Validators.required],
       amount: ['', [Validators.required, Validators.pattern(/^\d+\.?\d{0,2}$/)]],
       date: ['', Validators.required],
-      // Add other controls as needed
+      notes: [''],
+      group: [''],
+      groupId: [''],
+      groupTitle: [''],
+      groupCreaterUid: [''],
+      groupCreatedBy: [''],
+      payersData: [''],
+      expenseIcon: [''],
+      selectedGroupControl: [this.selectedGroup?.groupTitle || '', Validators.required]
     });
+
+    this.expenseForm.valueChanges.subscribe(() => {
+      this.calculatePerPersonAmount();
+    });
+
   }
+
+  calculatePerPersonAmount() {
+    const amount = this.expenseForm.get('amount')?.value;
+    const withYouArray = this.expenseForm.get('withYou')?.value;
+
+    if (amount && Array.isArray(withYouArray) && withYouArray.length > 0) {
+      this.perPerson = amount / withYouArray.length;
+      // console.log('Per person amount:', this.perPerson);
+    } else {
+      // console.log('Please enter a valid amount and select people to split the expense.');
+    }
+  }
+
   ngOnInit(): void {
-    console.log('selectedGroup----------', this.selectedGroup);
+
+    console.log('Selected group!!!!!!!!!!!:', this.selectedGroup);
+    if (!this.selectedMembers || this.selectedMembers.length === 0) {
+      this.setAllMembers();
+    }
+
+
+    console.log('allGroup=======>>>', this.allGroup);
+
+    if (this.selectedView === 'group') {
+      this.expenseForm.removeControl('selectedGroupControl');
+    } else {
+      this.expenseForm.get('selectedGroupControl')?.valueChanges.subscribe((selectedGroupData) => {
+        this.onGroupSelect(selectedGroupData);
+      });
+    }
   }
 
 
 
+  onGroupSelect(selectedGroupData: any) {
+    this.selectedGroupData = selectedGroupData;
+    // console.log('Selected group:', this.selectedGroupData);
+    this.selectedGroup = this.selectedGroupData;
+
+    this.setAllMembers();
+
+
+  }
+
+  setAllMembers() {
+    if (this.selectedGroup && this.selectedGroup.members) {
+      const allMemberIds = this.selectedGroup.members.map((member: any) => member.memberId);
+      this.expenseForm.patchValue({ withYou: allMemberIds });
+      this.selectedMembers = allMemberIds;
+    }
+    // this.filterMembers();
+  }
+
+  // filterMembers() {
+  //   if (this.selectedGroup && this.selectedGroup.members) {
+  //     // Deep copy the members array to avoid mutations
+  //     const membersCopy = JSON.parse(JSON.stringify(this.selectedGroup.members));
+
+  //     // Exclude the member who created the group
+  //     this.anotherFilterGroup = membersCopy.filter((member: any) =>
+  //       member.memberId !== this.selectedGroup.groupCreaterUid
+  //     );
+
+  //     console.log('this.anotherFilterGroup--------', this.anotherFilterGroup);
+  //   }
+  // }
+  saveExpense() {
+
+    if (this.selectedGroup) {
+      this.expenseForm.patchValue({
+        groupId: this.selectedGroup?.groupId || '',
+        groupTitle: this.selectedGroup?.groupTitle || '',
+        groupCreaterUid: this.selectedGroup?.groupCreaterUid || this.groupCreaterUid || '',
+        groupCreatedBy: this.selectedGroup?.groupCreatedBy || this.groupCreatedBy || '',
+        payersData: this.payersData,
+        expenseIcon: this.imageSrc || '',
+      });
+
+    }
+
+    if (!this.expenseForm.get('withYou')?.value || this.expenseForm.get('withYou')?.value.length === 0) {
+      this.setAllMembers();
+    }
+    if (!this.expenseForm.get('payersData')?.value || this.expenseForm.get('payersData')?.value.length === 0) {
+      this.payersData.push({
+        amount: this.expenseForm.value.amount,
+        groupCreater: true,
+        memberId: this.selectedGroup.groupCreaterUid,
+        memberName: this.selectedGroup.groupCreatedBy,
+      })
+    }
+
+    if (this.expenseForm.valid) {
+      const expenseData = this.expenseForm.value;
+      // console.log('Expense data:', expenseData);
+
+      this.dataService.addExpense(expenseData).subscribe(
+        (response: any) => {
+
+          console.log('Expenses added successfully:', response)
+
+          this.dataService.calculateBalancesForGroup(this.selectedGroup?.groupId);
+          this.dataService.calculateBalancesForExpense(this.selectedGroup?.groupId, response.id);
+        },
+        (error: any) => console.error('Error while adding expenses:', error)
+      );
+
+      this.activeModal.close(expenseData);
+    }
+  }
 
   updateImage() {
-    // Update imageSrc based on description
     const description = this.expenseForm.get('description')?.value;
     if (description) {
       this.imageSrc = this.getImageForDescription(description);
     } else {
-      this.imageSrc = null; // Or set a default image
+      this.imageSrc = null;
     }
   }
 
   getImageForDescription(description: string): string {
-    // Define the image mapping with a string index signature
     const images: { [key: string]: string } = {
-      party: 'assets/logo/logo.png',
-      movie: 'assets/logo/images.png',
-      // Add other mappings as needed
+      party: 'assets/logo/party.png',
+      ticket: 'assets/logo/ticket.png',
+      movie: 'assets/logo/ticket.png',
+      pooja: 'assets/logo/pooja.png',
+      travel: 'assets/logo/travel.png',
+      trip: 'assets/logo/trip.png',
     };
-
-    // Use a lowercase version of the description to access the mapping
-    return images[description.toLowerCase()] || 'assets/logo/logo.png';
+    return images[description.toLowerCase()] || 'assets/logo/ticket.png';
   }
 
-  saveExpense() {
-    // Logic to save expense
-    if (this.expenseForm.valid) {
-      const expenseData = this.expenseForm.value;
-      console.log(expenseData);
-      // Handle saving the data
-    }
-  }
-
-
-  // Open the payer modal
   openPayerModal() {
-    const modalRef = this.modalService.open(PayerModalComponent, { size: 'lg' });
-    // modalRef.componentInstance.selectedPayers = this.selectedPayers;
+    let groupMembers: any[] = [
+      ...this.selectedGroup.members,
+    ];
 
-    // Get data back from the modal when it's closed
-    modalRef.result.then((result: any) => {
-      // if (result) {
-      //   this.selectedPayers = result;
-      //   this.expenseForm.patchValue({ payers: this.selectedPayers });
+    let filteredMembers = groupMembers.filter(member =>
+      this.selectedMembers.includes(member.memberId)
+    );
+
+    filteredMembers = [...filteredMembers,
+      //   {
+      //   memberId: this.selectedGroup.groupCreaterUid,
+      //   memberName: this.selectedGroup.groupCreatedBy,
+      //   groupCreater: true
       // }
-    }, (reason) => {
+    ];
+
+    const modalRef = this.modalService.open(PayerModalComponent, { size: 'lg' });
+    modalRef.componentInstance.allPayers = this.selectedMembers == undefined ? this.selectedGroup : filteredMembers;
+    modalRef.componentInstance.totalExpenseAmount = this.expenseForm.value.amount
+
+    modalRef.result.then((result: any) => {
+      if (result.length !== 0) {
+        this.payersData = result;
+        console.log('Payers Data:', result);
+      } else {
+        this.payersData.push({
+          amount: this.expenseForm.value.amount,
+          groupCreater: true,
+          memberId: this.selectedGroup.groupCreaterUid,
+          memberName: this.selectedGroup.groupCreatedBy,
+        })
+      }
+    }, (reason: any) => {
       console.log('Dismissed');
     });
+  }
+
+
+  selectGroupMember() {
+    this.isNgSelectVisible = true;
   }
 }

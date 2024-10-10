@@ -1,0 +1,52 @@
+<div class="profile-header">
+    <h2>Your Account</h2>
+    <button class="btn btn-danger logout-btn" (click)="logout()">Logout</button>
+</div>
+
+<div class="profile-container">
+    <div class="profile-avatar-section">
+        <div class="avatar-wrapper">
+            <img *ngIf="profileImageUrl" [src]="user.profileImageUrl ? user.profileImageUrl : profileImageUrl"
+                alt="Profile Image" class="profile-avatar img-thumbnail" />
+            <label for="avatar-upload" class="change-avatar">
+                <i class="fas fa-pencil-alt"></i>
+            </label>
+            <input id="avatar-upload" type="file" (change)="onFileChange($event)" />
+        </div>
+    </div>
+
+    <div class="profile-details-section">
+        <div class="detail-item">
+            <span class="label">Your name</span>
+            <span *ngIf="!editMode.username" class="detail">{{ user.username }}</span>
+            <input *ngIf="editMode.username" [(ngModel)]="user.username" class="form-control" type="text" />
+            <i class="fas fa-pencil-alt" (click)="toggleEdit('username')"></i>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Your email address</span>
+            <span *ngIf="!editMode.email" class="detail">{{ user.email }}</span>
+            <input *ngIf="editMode.email" [(ngModel)]="user.email" class="form-control" type="email" readonly />
+            <i class="fas fa-pencil-alt" (click)="toggleEdit('email')"></i>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Your phone number</span>
+            <span *ngIf="!editMode.mobile" class="detail">{{ user.mobile ? user.mobile : 'None' }}</span>
+            <input *ngIf="editMode.mobile" [(ngModel)]="user.mobile" class="form-control" type="text" />
+            <i class="fas fa-pencil-alt" (click)="toggleEdit('mobile')"></i>
+        </div>
+
+        <div class="detail-item">
+            <span class="label">Your password</span>
+            <span *ngIf="!editMode.password" class="detail">**********</span>
+            <input *ngIf="editMode.password" disabled="true" [(ngModel)]="user.password" class="form-control"
+                type="password" />
+            <i class="fas fa-pencil-alt" (click)="toggleEdit('password')"></i>
+        </div>
+
+        <div *ngIf="isEditing()" class="text-center">
+            <button class="btn btn-primary" (click)="saveChanges()">Save Changes</button>
+        </div>
+    </div>
+</div>

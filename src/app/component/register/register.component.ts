@@ -10,38 +10,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-
-//   email : string = '';
-//   password : string = '';
-
-//   constructor(private auth : AuthService) { }
-
-//   ngOnInit(): void {
-//   }
-
-//   register() {
-
-//     if(this.email == '') {
-//       alert('Please enter email');
-//       return;
-//     }
-
-//     if(this.password == '') {
-//       alert('Please enter password');
-//       return;
-//     }
-
-//     this.auth.register(this.email,this.password);
-    
-//     this.email = '';
-//     this.password = '';
-
-//   }
-
-// }
-
-
-
   registrationForm: FormGroup;
   submitted = false;
 
@@ -71,15 +39,7 @@ export class RegisterComponent implements OnInit {
     if (this.registrationForm.invalid) {
       return;
     }
-
-    // this.authService.register(this.registrationForm.value).subscribe((registerRes: any) => {
-    //   console.log('register res-----', registerRes);
-
-    //   this.router.navigate(['/login']);
-    // },
-    //   (err: any) => console.error('Login error', err)
-    // )
-
-    this.authService.register(this.registrationForm.value.email, this.registrationForm.value.password);
+    const { email, password, username, mobile } = this.registrationForm.value;
+    this.authService.register(email, password, username, mobile);
   }
 }

@@ -1,4 +1,3 @@
-<!-- Payer Modal -->
 <div class="modal-header">
     <h5 class="modal-title">Choose payer</h5>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
@@ -7,18 +6,18 @@
 </div>
 
 <div class="modal-body">
-    <div *ngFor="let payer of payers" class="payer-option">
+    <div *ngFor="let payer of allPayers" class="payer-option">
         <label>
-            <input type="checkbox" [checked]="selectedPayers.includes(payer)" (change)="togglePayer(payer)">
-            {{ payer.name }}
+            <input type="checkbox" [checked]="isPayerSelected(payer)" (change)="togglePayer(payer)">
+            {{ payer.memberName }}
         </label>
     </div>
 
     <div class="multiple-payer-section" *ngIf="multiplePayers">
         <h6>Multiple people</h6>
         <div *ngFor="let payer of selectedPayers" class="payer-input">
-            <label>{{ payer.name }}</label>
-            <input type="number" [(ngModel)]="payer.amount" placeholder="$">
+            <label class="me-4">{{ payer.memberName }}</label>
+            <input type="number" [(ngModel)]="payer.amount" placeholder="$" class="form-control">
         </div>
     </div>
 </div>

@@ -1,3 +1,4 @@
+
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -8,43 +9,46 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PayerModalComponent implements OnInit {
 
-// payer-modal.component.ts
-
-
-  @Input() selectedPayers: any[] = [];
-
-  // Mock list of payers
-  payers = [
-    { name: 'Anshu Yadav', amount: 0 },
-    { name: 'Neelam', amount: 0 },
-    { name: 'Swapan Paul', amount: 0 }
-  ];
-
+  @Input() allPayers: any[] = [];
+  @Input() totalExpenseAmount: any;
+  selectedPayers: any[] = [];
   multiplePayers = false;
 
   constructor(public modal: NgbActiveModal) { }
 
   ngOnInit(): void {
-    
+    // console.log('Initial allPayers:@@@@@@@@@@', this.allPayers);
+
+    const groupCreator = this.allPayers.find(payer => payer.groupCreater);
+    if (groupCreator) {
+
+      this.selectedPayers.push({ ...groupCreator, amount: this.totalExpenseAmount });
+    }
+
+    this.multiplePayers = this.selectedPayers.length > 1;
+    // console.log('Initially selected payers:', this.selectedPayers);
   }
 
-  // Toggle payer selection
   togglePayer(payer: any) {
-    const index = this.selectedPayers.findIndex(p => p.name === payer.name);
+    const index = this.selectedPayers.findIndex(p => p.memberId === payer.memberId);
     if (index > -1) {
       this.selectedPayers.splice(index, 1);
     } else {
-      this.selectedPayers.push({ ...payer });
+      this.selectedPayers.push({ ...payer, amount: 0 });
     }
+
     this.multiplePayers = this.selectedPayers.length > 1;
+    // console.log('Updated selectedPayers:', this.selectedPayers);
   }
 
-  // Confirm the selection and return it to the parent
   confirmPayers() {
+
+    // console.log('Confirmed payers:', this.selectedPayers);
+
     this.modal.close(this.selectedPayers);
+  }
 
-
-    console.log('this.selectedPayers=======', this.selectedPayers);
+  isPayerSelected(payer: any) {
+    return this.selectedPayers.some(p => p.memberId === payer.memberId);
   }
 }
-

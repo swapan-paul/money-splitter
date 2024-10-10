@@ -12,15 +12,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ForgotPasswordComponent } from './component/forgot-password/forgot-password.component';
 import { VarifyEmailComponent } from './component/varify-email/varify-email.component';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { FileuploadComponent } from './component/fileupload/fileupload.component'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddExpenseModalComponent } from './component/add-expense-modal/add-expense-modal.component';
 import { AddEditGroupComponent } from './component/add-edit-group/add-edit-group.component';
 import { LoaderComponent } from './component/loader/loader.component';
 import { PayerModalComponent } from './component/payer-modal/payer-modal.component';
 import { DashboardViewComponent } from './component/dashboard-view/dashboard-view.component';
-import { GroupViewComponent } from './component/group-view/group-view.component';
-import { FriendViewComponent } from './component/friend-view/friend-view.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { ConfirmationModalComponent } from './component/confirmation-modal/confirmation-modal.component';
+import { AllExpensesViewComponent } from './component/all-expenses-view/all-expenses-view.component';
+import { PaymentModalComponent } from './component/payment-modal/payment-modal.component';
+import { ProfileComponent } from './component/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -30,14 +32,15 @@ import { FriendViewComponent } from './component/friend-view/friend-view.compone
     DashboardComponent,
     ForgotPasswordComponent,
     VarifyEmailComponent,
-    FileuploadComponent,
     AddExpenseModalComponent,
     AddEditGroupComponent,
     LoaderComponent,
     PayerModalComponent,
     DashboardViewComponent,
-    GroupViewComponent,
-    FriendViewComponent,
+    ConfirmationModalComponent,
+    AllExpensesViewComponent,
+    PaymentModalComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +49,7 @@ import { FriendViewComponent } from './component/friend-view/friend-view.compone
     FormsModule,
     ReactiveFormsModule,
     FormsModule,
+    NgSelectModule,
     NgbModule
   ],  
   providers: [],

@@ -14,22 +14,33 @@ export class AddEditGroupComponent implements OnInit {
   groupForm!: FormGroup;
   selectedImages: File[] = [];
   showImages: any[] = [];
+  addCreaterUser: any[] = [];
   selectedGroup: any = '';
   hasChanges: boolean = false;
+  groupCreatedBy: any;
+  groupCreaterUid: any;
 
   constructor(
     private fb: FormBuilder,
     private activeModal: NgbActiveModal,
     private loaderService: LoadingService,
     private dataService: DataService,
-    
+
   ) { }
 
   ngOnInit(): void {
-    console.log('selectedGroup==========', this.selectedGroup);
+
+    this.groupCreatedBy = localStorage.getItem('userName') || '';
+    this.groupCreaterUid = localStorage.getItem('uId') || '';
+
+    // console.log('selectedGroup==========', this.selectedGroup);
+    // console.log('this.groupCreaterUid==========', this.groupCreaterUid);
+    // console.log('this.groupCreatedBy==========', this.groupCreatedBy);
 
     this.groupForm = this.fb.group({
       groupTitle: [this.selectedGroup?.groupTitle || '', Validators.required],
+      groupCreatedBy: [this.groupCreatedBy, Validators.required],
+      groupCreaterUid: [this.groupCreaterUid, Validators.required],
       groupType: [this.selectedGroup?.groupType || '', Validators.required],
       members: this.fb.array([]),
     });
@@ -51,8 +62,6 @@ export class AddEditGroupComponent implements OnInit {
     }
   }
 
-
-
   isFormEdited(): boolean {
     return (
       this.groupForm.get('groupTitle')?.value !== this.selectedGroup.groupTitle ||
@@ -60,8 +69,6 @@ export class AddEditGroupComponent implements OnInit {
       !this.areMemberSame()
     );
   }
-
-
 
 
   createMemberNameControl(memberName: string = ''): FormGroup {
@@ -80,87 +87,92 @@ export class AddEditGroupComponent implements OnInit {
 
   removeMemberName(index: number) {
     this.members.removeAt(index);
-    this.hasChanges = this.isFormEdited() || this.selectedImages.length > 0 ;
+    this.hasChanges = this.isFormEdited() || this.selectedImages.length > 0;
   }
 
   closeModal() {
     this.activeModal.dismiss();
   }
 
-  editGroup() {
-    console.log('this.groupForm--------->>', this.groupForm.value);
+  // editGroup() {
+  //   console.log('this.groupForm--------->>', this.groupForm.value);
 
-    const isFormChanged = this.isFormEdited();
+  //   const isFormChanged = this.isFormEdited();
 
-    if (this.groupForm.valid && isFormChanged) {
-      const uploadObservables: any[] = [];
+  //   if (this.groupForm.valid && isFormChanged) {
+  //     const uploadObservables: any[] = [];
 
-      this.loaderService.show();
+  //     this.loaderService.show();
 
-          const members = this.members.value.map((tech: any) => tech.memberName);
-          const formData = {
-            ...this.groupForm.value,
-            members,
-          };
+  //         const members = this.members.value.map((tech: any) => tech.memberName);
+  //         const formData = {
+  //           ...this.groupForm.value,
+  //           members,
+  //         };
 
-          console.log('formData--------->>', formData);
+  //         console.log('formData--------->>', formData);
 
-          this.dataService.updateGroup(this.selectedGroup.id, formData).then(
-            () => console.log('Group updated successfully'),
-            (error:any) => console.error('Error while updating Group:', error)
-          );
-          this.loaderService.hide();
+  //         this.dataService.updateGroup(this.selectedGroup.id, formData).then(
+  //           () => console.log('Group updated successfully'),
+  //           (error:any) => console.error('Error while updating Group:', error)
+  //         );
+  //         this.loaderService.hide();
 
-          this.closeModal();
-        
+  //         this.closeModal();
 
-        this.loaderService.hide();
-      }
-     else {
-      console.log('No changes detected or form is invalid');
-    }
-  }
-  
 
+  //       this.loaderService.hide();
+  //     }
+  //    else {
+  //     console.log('No changes detected or form is invalid');
+  //   }
+  // }
 
 
   onSubmit() {
     if (this.groupForm.valid) {
 
-      console.log('Form is valid', this.groupForm.value);
+      // console.log('Form is valid', this.groupForm.value);
 
       this.loaderService.show();
 
-        const members = this.members.value.map((tech: any) => tech.memberName);
-        const formData = {
-          ...this.groupForm.value,
-          members,
-        };
+      const members = this.members.value.map((tech: any) => tech.memberName);
+      const formData = {
+        ...this.groupForm.value,
+        members,
+      };
 
-        this.dataService.addGroup(formData).subscribe(
-          (response:any) => {
-            if (response.id){
-              // this.addFriendsCollection(response.id, members, this.groupForm.value.groupTitle); // Pass the group id and members
+      this.dataService.addGroup(formData).subscribe(
+        (response: any) => {
+          if (response.id) {
+            this.dataService.addFriendsWithIds(response.id, members, this.groupForm.value.groupTitle, this.groupCreatedBy, this.groupCreaterUid).subscribe(
+              (updatedMembers: any) => {
 
-              // If the group is added successfully, add friends and get their IDs
-              this.dataService.addFriendsWithIds(response.id, members, this.groupForm.value.groupTitle).subscribe(
-                (updatedMembers:any) => {
-                  // After adding friends and getting their IDs, update the group with the updated members array
-                  this.dataService.updateGroupMembers(response.id, updatedMembers);
-                },
-                (error: any) => {
-                  console.error('Error while adding friends with IDs:', error);
+
+                this.addCreaterUser = [...updatedMembers,
+                {
+                  memberId: this.groupCreaterUid,
+                  memberName: this.groupCreatedBy,
+                  groupCreater: true
                 }
-              );
+                ]
 
-              
-            }
-            console.log('Group added successfully:', response)},
-          (error: any) => console.error('Error while adding group:', error)
-        );
-        this.loaderService.hide();
+                this.dataService.updateGroupMembers(response.id, this.addCreaterUser);
+              },
+              (error: any) => {
+                console.error('Error while adding friends with IDs:', error);
+              }
+            );
 
-        this.closeModal();
+
+          }
+          console.log('Group added successfully:', response)
+        },
+        (error: any) => console.error('Error while adding group:', error)
+      );
+      this.loaderService.hide();
+
+      this.closeModal();
     } else {
       console.log('Form is invalid');
     }
@@ -184,9 +196,5 @@ export class AddEditGroupComponent implements OnInit {
     return true;
   }
 
-  
-
-
 }
-
 

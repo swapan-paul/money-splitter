@@ -1,58 +1,26 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-// import { FileMetaData } from '../model/file-meta-data';
-// import { Student } from '../model/student';
-import { from, Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { from, Observable, throwError } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  // constructor(private afs : AngularFirestore, private fireStorage : AngularFireStorage) { }
-
-
-  // // add student
-  // addStudent(student : Student) {
-  //   student.id = this.afs.createId();
-  //   return this.afs.collection('/Students').add(student);
-  // }
-
-  // // get all students
-  // getAllStudents() {
-  //   return this.afs.collection('/Students').snapshotChanges();
-  // }
-
-  // // delete student
-  // deleteStudent(student : Student) {
-  //    this.afs.doc('/Students/'+student.id).delete();
-  // }
-
-  // // update student
-  // updateStudent(student : Student) {
-  //   this.deleteStudent(student);
-  //   this.addStudent(student);
-  // }
-
-
-
   constructor(private db: AngularFirestore, private storage: AngularFireStorage) { }
-
 
   // ---------------------------------------group-------------------------------------------------------------
 
   addGroup(groupData: any): Observable<any> {
-    console.log('groupData------', groupData);
+    // console.log('groupData------', groupData);
     return new Observable(observer => {
-      // Add server timestamp and any other metadata
       const groupPayload = {
         ...groupData,
-        createdAt: new Date() // Replace with serverTimestamp() if you prefer Firestore's server timestamp
+        createdAt: new Date()
       };
 
-      // Add the group to the 'groups' collection
       this.db.collection('Groups').add(groupPayload)
         .then(docRef => {
           console.log('Group added successfully with ID:', docRef.id);
@@ -76,7 +44,6 @@ export class DataService {
   }
 
 
-  // Upload image to Firebase Storage and return the download URL
   uploadImage(file: File, filePath: string): Observable<string> {
     const fileRef = this.storage.ref(filePath);
     const uploadTask = this.storage.upload(filePath, file);
@@ -84,9 +51,8 @@ export class DataService {
     return new Observable(observer => {
       uploadTask.snapshotChanges().pipe(
         finalize(() => {
-          // Get the download URL after the upload is complete
           fileRef.getDownloadURL().subscribe(downloadURL => {
-            observer.next(downloadURL);  // Emit the download URL
+            observer.next(downloadURL);
             observer.complete();
           });
         })
@@ -95,8 +61,8 @@ export class DataService {
   }
 
 
-  public getGroups(): Observable<any[]> {
-    return this.db.collection('Groups')
+  public getGroups(groupCreaterUid: any): Observable<any[]> {
+    return this.db.collection('Groups', ref => ref.where('groupCreaterUid', '==', groupCreaterUid))
       .snapshotChanges()
       .pipe(
         map(actions => actions.map(a => {
@@ -116,67 +82,36 @@ export class DataService {
   }
 
 
-// -------------------------------friend-----------------------------------------------------------------
+  // -------------------------------friend-----------------------------------------------------------------
 
 
-
-  // addFriends(friendsData: any[]): Observable<any> {
-  //   return new Observable(observer => {
-  //     const batch = this.db.firestore.batch();
-
-  //     friendsData.forEach(friend => {
-  //       const friendRef = this.db.collection('Friends').doc().ref; // Create a new document for each friend
-  //       batch.set(friendRef, friend);  // Add the friend data to the batch
-  //     });
-
-  //     batch.commit()
-  //       .then(() => {
-  //         console.log('Friends added successfully');
-  //         observer.next({
-  //           status: 200,
-  //           message: 'Friends added successfully'
-  //         });
-  //         observer.complete();
-  //       })
-  //       .catch(error => {
-  //         console.error('Error adding friends:', error);
-  //         observer.error({
-  //           status: 400,
-  //           message: 'Error adding friends',
-  //           error: error
-  //         });
-  //       });
-  //   });
-  // }
-
-
-  addFriendsWithIds(groupId: string, members: string[], groupTitle: any): Observable<any> {
+  addFriendsWithIds(groupId: string, members: string[], groupTitle: any, groupCreatedBy: any, groupCreaterUid: any): Observable<any> {
     return new Observable(observer => {
       const updatedMembers: any[] = [];
-      const batch = this.db.firestore.batch();  // Direct Firestore batch operation
+      const batch = this.db.firestore.batch();
 
       members.forEach(memberName => {
-        const friendRef = this.db.firestore.collection('Friends').doc(); // Direct Firestore DocumentReference
+        const friendRef = this.db.firestore.collection('Friends').doc();
 
         batch.set(friendRef, {
           groupId,
           groupTitle,
           memberName,
-          addedAt: new Date()  // Timestamp for when the friend was added
+          addedAt: new Date(),
+          groupCreaterUid: groupCreaterUid,
+          groupCreatedBy: groupCreatedBy,
         });
 
-        // Push the member object with ID into the updatedMembers array
         updatedMembers.push({
           memberName: memberName,
-          memberId: friendRef.id  // Get the generated Firestore document ID
+          memberId: friendRef.id
         });
       });
 
-      // Commit the batch
       batch.commit()
         .then(() => {
           console.log('Friends added successfully with IDs');
-          observer.next(updatedMembers); // Send the updated members array back with IDs
+          observer.next(updatedMembers);
           observer.complete();
         })
         .catch(error => {
@@ -192,10 +127,10 @@ export class DataService {
 
 
 
-  // Method to update the group with members including IDs
   updateGroupMembers(groupId: string, updatedMembers: any[]) {
     this.db.collection('Groups').doc(groupId).update({
-      members: updatedMembers  // Update the group document with the new members array containing member IDs
+      members: updatedMembers,
+      groupId: groupId
     })
       .then(() => {
         console.log('Group members updated with IDs');
@@ -206,8 +141,8 @@ export class DataService {
   }
 
 
-  public getFriends(): Observable<any[]> {
-    return this.db.collection('Friends')
+  public getFriends(groupCreaterUid: any): Observable<any[]> {
+    return this.db.collection('Friends', ref => ref.where('groupCreaterUid', '==', groupCreaterUid))
       .snapshotChanges()
       .pipe(
         map(actions => actions.map(a => {
@@ -218,5 +153,310 @@ export class DataService {
       );
   }
 
-    
+
+
+
+  // --------------------------Expenses---------------------------------------------------------------------------
+
+
+  addExpense(expenseData: any): Observable<any> {
+    // console.log('groupData------', expenseData);
+    return new Observable(observer => {
+      const expensesPayload = {
+        ...expenseData,
+        createdAt: new Date()
+      };
+
+      this.db.collection('Expenses').add(expensesPayload)
+        .then(docRef => {
+          console.log('Expenses added successfully with ID:', docRef.id);
+          observer.next({
+            status: 200,
+            message: 'Expenses added successfully',
+            id: docRef.id,
+            data: expenseData
+          });
+          observer.complete();
+        })
+        .catch(error => {
+          console.error('Error adding expenses:', error);
+          observer.error({
+            status: 400,
+            message: 'Error adding expenses',
+            error: error
+          });
+        });
+    });
+  }
+
+  public getExpenses(groupCreaterUid: any): Observable<any[]> {
+    return this.db.collection('Expenses', ref => ref.where('groupCreaterUid', '==', groupCreaterUid))
+      .snapshotChanges()
+      .pipe(
+        map(actions => actions.map(a => {
+          const data = a.payload.doc.data();
+          const id = a.payload.doc.id;
+          return { id, ...(typeof data === 'object' && data !== null ? data : {}) };
+        }))
+      );
+  }
+
+
+
+  public getExpensesByGroupId(groupId: any): Observable<any[]> {
+
+    // console.log('groupId******', groupId);
+    return this.db.collection('Expenses', ref => ref.where('groupId', '==', groupId))
+      .snapshotChanges()
+      .pipe(
+        map(actions => {
+          return actions.map(action => {
+            const data = action.payload.doc.data();
+            const id = action.payload.doc.id;
+            return { id, ...(data as object) };
+          });
+        }),
+        catchError(error => {
+          console.error('Error fetching expenses by groupId:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+  public getExpensesByMemberId(memberId: string): Observable<any[]> {
+
+    return this.db.collection('Expenses').snapshotChanges()
+      .pipe(
+        map(actions => {
+
+          return actions.map(action => {
+            const data = action.payload.doc.data();
+            const id = action.payload.doc.id;
+
+            // console.log('data%%%%%%%%%%', data);
+
+            const isMemberPresentInWithYou = (data as any).withYou && (data as any).withYou.includes(memberId);
+
+            // console.log('isMemberPresentInWithYou%%%%%%%%%%', isMemberPresentInWithYou);
+
+            if (isMemberPresentInWithYou) {
+              return { id, ...(data as object) };
+            }
+
+            return null;
+          }).filter(expense => expense !== null);
+        }),
+        catchError(error => {
+          console.error('Error fetching expenses by memberId:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+
+
+
+
+  deleteExpenseById(expenseId: string): Observable<void> {
+    const deletePromise = this.db.collection('Expenses').doc(expenseId).delete();
+    return from(deletePromise);
+  }
+
+
+  // ---------------------------------balance-------------------------------------------------------------------------------
+
+  calculateBalancesForGroup(groupId: string): void {
+    this.db.collection('Groups').doc(groupId).get().subscribe((groupSnapshot: any) => {
+      const groupData = groupSnapshot.data();
+      const members = groupData.members;
+
+      const memberBalances: any = {};
+      members.forEach((member: any) => {
+        memberBalances[member.memberId] = {
+          balance: {},
+          memberName: member.memberName,
+        };
+
+        members.forEach((otherMember: any) => {
+          if (member.memberId !== otherMember.memberId) {
+            memberBalances[member.memberId].balance[otherMember.memberId] = 0;
+          }
+        });
+      });
+
+      this.db.collection('Expenses', ref => ref.where('groupId', '==', groupId)).get().subscribe((expensesSnapshot: any) => {
+        const expenses = expensesSnapshot.docs.map((doc: any) => doc.data());
+
+        expenses.forEach((expense: any) => {
+          const totalAmount = parseFloat(expense.amount);
+          const payersData = expense.payersData || [];
+          const participants = expense.withYou || [];
+
+          const numParticipants = participants.length;
+          const sharePerPerson = totalAmount / numParticipants;
+
+          payersData.forEach((payer: any) => {
+            const payerId = payer.memberId;
+            const paidAmount = parseFloat(payer.amount);
+            const isCreator = payer.groupCreater || false;
+
+            if (!memberBalances[payerId]) {
+              console.error(`Payer with ID ${payerId} not found in memberBalances`);
+              return;
+            }
+
+            const shareOfThisPayer = paidAmount / numParticipants;
+
+            participants.forEach((participantId: any) => {
+              if (payerId !== participantId) {
+                memberBalances[payerId].balance[participantId] += shareOfThisPayer;
+
+                memberBalances[participantId].balance[payerId] -= shareOfThisPayer;
+
+                if (isCreator) {
+                  memberBalances[payerId].groupCreater = true;
+                  console.log(`Group creator ${payer.memberName} has paid and is now patched into balances.`);
+                }
+              }
+            });
+          });
+        });
+
+        this.db.collection('Balances').doc(groupId).set({
+          memberBalances
+        }).then((balanceData) => {
+          console.log("Balances calculated and stored successfully!", balanceData);
+        }).catch(err => {
+          console.error("Error storing balances: ", err);
+        });
+      });
+    });
+  }
+
+
+
+
+
+
+
+  public getAllBalance(): Observable<any[]> {
+
+    return this.db.collection('Balances')
+      .snapshotChanges()
+      .pipe(
+        map(actions => {
+          return actions.map(action => {
+            const data = action.payload.doc.data();
+            const id = action.payload.doc.id;
+            return { id, ...(data as object) };
+          });
+        }),
+        catchError(error => {
+          console.error('Error fetching expenses by groupId:', error);
+          return throwError(error);
+        })
+      );
+
+  }
+
+
+  public getBalanceByGroupId(groupId: string): Observable<any> {
+    return this.db.collection('Balances').doc(groupId)
+      .snapshotChanges()
+      .pipe(
+        map(action => {
+          const data = action.payload.data();
+          const id = action.payload.id;
+          return { id, ...(data as object) };
+        }),
+        catchError(error => {
+          console.error('Error fetching balance by document id:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+
+  public getUserData(userId: string): Observable<any> {
+    return this.db.collection('users').doc(userId)
+      .snapshotChanges()
+      .pipe(
+        map(action => {
+          const data = action.payload.data();
+          const id = action.payload.id;
+          return { id, ...(data as object) };
+        }),
+        catchError(error => {
+          console.error('Error fetching User by document id:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+
+
+  calculateBalancesForExpense(groupId: string, expenseId: string): void {
+    // console.log('groupId: string, expenseId: string', groupId, expenseId);
+
+    this.db.collection('Groups').doc(groupId).get().subscribe((groupSnapshot: any) => {
+      const groupData = groupSnapshot.data();
+      const members = groupData.members;
+
+      const memberBalances: any = {};
+      members.forEach((member: any) => {
+        memberBalances[member.memberId] = {
+          balance: {},
+          memberName: member.memberName,
+          groupCreater: member.groupCreater || false
+        };
+
+        members.forEach((otherMember: any) => {
+          if (member.memberId !== otherMember.memberId) {
+            memberBalances[member.memberId].balance[otherMember.memberId] = 0;
+          }
+        });
+      });
+
+      this.db.collection('Expenses').doc(expenseId).get().subscribe((expenseSnapshot: any) => {
+        const expense = expenseSnapshot.data();
+
+        const totalAmount = parseFloat(expense.amount);
+        const payersData = expense.payersData || [];
+        const participants = expense.withYou || [];
+
+        const numParticipants = participants.length;
+        const sharePerPerson = totalAmount / numParticipants;
+
+        payersData.forEach((payer: any) => {
+          const payerId = payer.memberId;
+          const paidAmount = parseFloat(payer.amount);
+
+          if (!memberBalances[payerId]) {
+            console.error(`Payer with ID ${payerId} not found in memberBalances`);
+            return;
+          }
+
+          participants.forEach((participantId: any) => {
+            if (payerId !== participantId) {
+              const shareOfThisPayer = (paidAmount / numParticipants);
+              memberBalances[payerId].balance[participantId] += shareOfThisPayer;
+              memberBalances[participantId].balance[payerId] -= shareOfThisPayer;
+            }
+          });
+        });
+
+        this.db.collection('Expenses').doc(expenseId).update({
+          calculatedBalances: memberBalances
+        }).then(() => {
+          console.log("Balances calculated and stored in the expense document successfully!");
+        }).catch(err => {
+          console.error("Error updating the expense document: ", err);
+        });
+      });
+    });
+  }
+
+
+
+
 }

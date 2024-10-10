@@ -1,10 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { Student } from 'src/app/model/student';
 import { AuthService } from 'src/app/shared/auth.service';
 import { DataService } from 'src/app/shared/data.service';
 import { AddExpenseModalComponent } from '../add-expense-modal/add-expense-modal.component';
 import { AddEditGroupComponent } from '../add-edit-group/add-edit-group.component';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { EmailService } from 'src/app/shared/email/email.service';
+import { PaymentModalComponent } from '../payment-modal/payment-modal.component';
+import { ProfileComponent } from '../profile/profile.component';
 
 
 @Component({
@@ -14,131 +18,124 @@ import { AddEditGroupComponent } from '../add-edit-group/add-edit-group.componen
 })
 export class DashboardComponent implements OnInit {
 
-  // studentsList: Student[] = [];
-  // studentObj: Student = {
-  //   id: '',
-  //   first_name: '',
-  //   last_name: '',
-  //   email: '',
-  //   mobile: ''
-  // };
-  // id: string = '';
-  // first_name: string = '';
-  // last_name: string = '';
-  // email: string = '';
-  // mobile: string = '';
-
-  // constructor(private auth: AuthService, private data: DataService) { }
-
-  // ngOnInit(): void {
-  //   this.getAllStudents();
-  // }
-
-  // // register() {
-  // //   this.auth.logout();
-  // // }
-
-  // getAllStudents() {
-
-  //   this.data.getAllStudents().subscribe(res => {
-
-  //     this.studentsList = res.map((e: any) => {
-  //       const data = e.payload.doc.data();
-  //       data.id = e.payload.doc.id;
-  //       return data;
-  //     })
-
-  //   }, err => {
-  //     alert('Error while fetching student data');
-  //   })
-
-  // }
-
-  // resetForm() {
-  //   this.id = '';
-  //   this.first_name = '';
-  //   this.last_name = '';
-  //   this.email = '';
-  //   this.mobile = '';
-  // }
-
-  // addStudent() {
-  //   if (this.first_name == '' || this.last_name == '' || this.mobile == '' || this.email == '') {
-  //     alert('Fill all input fields');
-  //     return;
-  //   }
-
-  //   this.studentObj.id = '';
-  //   this.studentObj.email = this.email;
-  //   this.studentObj.first_name = this.first_name;
-  //   this.studentObj.last_name = this.last_name;
-  //   this.studentObj.mobile = this.mobile;
-
-  //   this.data.addStudent(this.studentObj);
-  //   this.resetForm();
-
-  // }
-
-  // updateStudent() {
-
-  // }
-
-  // deleteStudent(student: Student) {
-  //   if (window.confirm('Are you sure you want to delete ' + student.first_name + ' ' + student.last_name + ' ?')) {
-  //     this.data.deleteStudent(student);
-  //   }
-  // }
-
-
-  @ViewChild('actionModalTemplate') actionModalTemplate:any;
+  @ViewChild('actionModalTemplate') actionModalTemplate: any;
+  inviteEmail: string = '';
   selectedGroup: any;
   private modalRef!: NgbModalRef;
   expenses: any[] = [];
   groups: any[] = [];
   featureGroupsData: any[] = [];
   allFriendsData: any[] = [];
+  allExpenseData: any[] = [];
+  allExpenseDataByGroupId: any[] = [];
+  allExpense: any[] = [];
   selectedView: string = 'dashboard'; // Default to dashboard
   selectedFriend: any = null;
-  mainTitle: string = 'Command';
+  mainTitle: string = 'Dashboard';
   mainIcon: string = 'fas fa-tachometer-alt';
 
   viewIcons = {
     dashboard: 'fas fa-tachometer-alt',
     group: 'fas fa-users',
-    friend: 'fas fa-user'
+    friend: 'fas fa-user',
+    expenses: 'fas fa-money-bill-wave'
   };
+  selectedExpenseBalanceData: any;
+  allExpenseDataByMemberId: any[] = [];
+  selectedGroupDetail: any;
+  memberNames: any[] = [];
+  allmemberNames: any[] = [];
+  groupCreatedBy: any;
+  groupCreaterUid: any;
+  selectedGroupData: any;
+  selectedFeiendData: any
+
+
+  user = {
+    profileImage: 'assets/logo/profile.png'
+  };
+  userData: any;
+  isMobileView: boolean = false;
 
   constructor(private modalService: NgbModal,
-    private dataService: DataService,) { }
+    private dataService: DataService,
+    private firestore: AngularFirestore,
+    private auth: AngularFireAuth,
+    private emailService: EmailService) { }
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.isMobileView = window.innerWidth <= 768;
+  }
 
+  ngOnInit(): void {
+    this.isMobileView = window.innerWidth <= 768;
+    this.groupCreatedBy = localStorage.getItem('userName') || '';
+    this.groupCreaterUid = localStorage.getItem('uId') || '';
 
+    this.dataService.getUserData(this.groupCreaterUid).subscribe({
+      next: (data) => {
 
-  groupTitle = 'Home Sweet Home';
-  groupDetails = '3 people · Created July 2019';
-  oweAmount = '$80.61';
-  transactions = [
-    { description: 'Peanut Blasters', date: 'July 05', amount: '$3.33', type: 'borrowed' },
-    { description: 'Stamps', date: 'July 01', amount: '$8.34', type: 'borrowed' },
-    { description: 'Wifi', date: 'July 01', amount: '$29.67', type: 'borrowed' },
-    { description: 'Water', date: 'June 28', amount: '$101.48', type: 'lent' },
-  ];
+        this.userData = data;
+
+        this.user = {
+          profileImage: this.userData.profileImageUrl ? this.userData.profileImageUrl : 'assets/logo/profile.png'
+        };
+
+        // console.log('this.userData++++++++++++', this.userData)
+      },
+      error: (error) => {
+        console.error('Error fetching balance data:', error);
+      }
+    });
+
+    this.dataService.getGroups(this.groupCreaterUid).subscribe((groups: any) => {
+      this.featureGroupsData = groups || [];
+      // console.log('Fetched Groups:', this.featureGroupsData);
+
+      if (this.featureGroupsData.length > 0) {
+        this.selectedExpenseBalanceData = [];
+
+        this.featureGroupsData.forEach((group: any) => {
+          this.dataService.getAllBalance().subscribe(
+            (balanceData: any) => {
+              this.selectedExpenseBalanceData.push({
+                groupId: group.groupId,
+                groupTitle: group.groupTitle,
+                balanceData: balanceData
+              });
+              console.log(`Balance data fetched for groupId ${group.groupId}:`, balanceData);
+            },
+            (error) => {
+              console.error(`Error fetching balance data for groupId ${group.groupId}:`, error);
+            }
+          );
+        });
+      }
+    });
+
+    this.dataService.getFriends(this.groupCreaterUid).subscribe((friends: any) => {
+      this.allFriendsData = friends || [];
+      this.allmemberNames = this.allFriendsData.map(friend => friend.memberName);
+      // console.log('All friends:##########', this.allFriendsData);
+      // console.log('allmemberNames#########', this.allmemberNames);
+    });
+  }
 
 
   openExpensesModal() {
     const modalRef = this.modalService.open(AddExpenseModalComponent, { size: 'lg' });
 
-    // Correct way to pass selectedGroup to modal
-    if (this.selectedGroup) {
-      console.log('this.selectedGroup+++++++', this.selectedGroup);
-      modalRef.componentInstance.selectedGroup = this.selectedGroup;  // Pass the selectedGroup instance to the modal
+    if (this.selectedGroup, this.featureGroupsData) {
+      // console.log('this.selectedGroup+++++++', this.selectedGroup);
+      modalRef.componentInstance.selectedGroup = this.selectedGroup;
+      modalRef.componentInstance.allGroup = this.featureGroupsData;
+      modalRef.componentInstance.selectedView = this.selectedView;
     }
 
-    // When the modal closes, get the result (the expense) and add it to the list
     modalRef.result.then(
       (expense: any) => {
         if (expense) {
-          this.expenses.push(expense);
-          console.log('Expense added:', this.expenses);
+          // this.expenses.push(expense);
         }
       },
       (dismissed) => {
@@ -147,42 +144,98 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-
-  // Method to change the view based on user selection
   selectView(view: string, data: any = null) {
+
+    console.log('data=============', data);
     this.selectedView = view;
 
     if (view === 'group') {
+
+      this.dataService.getExpensesByGroupId(data.groupId).subscribe((expense: any) => {
+        this.allExpenseDataByGroupId = expense || [];
+        // console.log('All Expense Data By group Id:', this.allExpenseDataByGroupId);
+      });
+
       this.selectedGroup = data;
-      this.mainTitle = data.groupTitle; // Just the title without "Group:"
-      this.mainIcon = this.viewIcons.group; // Set the corresponding icon
+      this.selectedGroupDetail = data;
+
+      // console.log('selectedGroupDetail------444444', this.selectedGroupDetail);
+
+      const getMemberNames = (group: any) => {
+        return group.members
+          .filter((member: any) => !member.groupCreater)
+          .map((member: any) => member.memberName);
+      };
+
+      this.memberNames = getMemberNames(this.selectedGroupDetail);
+      // console.log(this.memberNames);
+
+
+
+      this.mainTitle = data.groupTitle;
+      this.mainIcon = this.viewIcons.group;
     } else if (view === 'friend') {
-      this.selectedFriend = data;
-      this.mainTitle = data.memberName; // Just the name without "Friend:"
-      this.mainIcon = this.viewIcons.friend; // Set the corresponding icon
+
+      this.dataService.getExpensesByMemberId(data.id).subscribe((expense: any) => {
+        this.allExpenseDataByMemberId = expense || [];
+        console.log('All Expense Data By member Id:', this.allExpenseDataByMemberId);
+      });
+
+
+      const selectedGroupFriend = {
+        ...data,
+        createdAt: new Date(),
+        groupCreaterUid: this.groupCreaterUid,
+        groupCreatedBy: this.groupCreatedBy,
+        members: [
+          { memberId: data.id, memberName: data.memberName },
+          { memberId: this.groupCreaterUid, memberName: this.groupCreatedBy }
+        ]
+      };
+
+      this.selectedGroup = selectedGroupFriend;
+      this.mainTitle = data.memberName;
+      this.mainIcon = this.viewIcons.friend;
     } else if (view === 'dashboard') {
-      this.mainTitle = 'Dashboard'; // Keep the original title
-      this.mainIcon = this.viewIcons.dashboard; // Set the corresponding icon
+      this.mainTitle = 'Dashboard';
+      this.mainIcon = this.viewIcons.dashboard;
+    }
+    else if (view === 'allExpenses') {
+
+
+      this.dataService.getExpenses(this.groupCreaterUid).subscribe((expense: any) => {
+        this.allExpense = expense || [];
+        console.log('All Expense:', this.allExpense);
+      });
+
+      this.mainTitle = 'All Expenses';
+      this.mainIcon = this.viewIcons.expenses;
     }
   }
 
 
+  openProfileModal() {
+    const modalRef = this.modalService.open(ProfileComponent, { centered: true, windowClass: 'custom-modal-profile' });
+    modalRef.componentInstance.user = {
+      email: this.userData?.email,
+      mobile: this.userData?.mobile,
+      uid: this.userData?.uid,
+      username: this.userData?.username,
+      profileImageUrl: this.userData?.profileImageUrl ? this.userData.profileImageUrl : ''
+    };
 
-
-  ngOnInit(): void {
-    this.dataService.getGroups().subscribe((groups:any) => {
-      this.featureGroupsData = groups || [];
-      console.log('Fetched Groups:', this.featureGroupsData);
-    });
-    this.dataService.getFriends().subscribe((groups:any) => {
-      this.allFriendsData = groups || [];
-      console.log('Fetched Groups:', this.featureGroupsData);
-    });
+    modalRef.result.then(
+      (updatedProfile) => {
+        console.log('Profile updated:', updatedProfile);
+      },
+      () => {
+        console.log('Profile modal closed');
+      }
+    );
   }
 
 
-
-  addGroup(selectedGroup?:any): void {
+  addGroup(selectedGroup?: any): void {
 
     const modalRef = this.modalService.open(AddEditGroupComponent, {
       centered: true,
@@ -197,49 +250,59 @@ export class DashboardComponent implements OnInit {
     }
 
     modalRef.result.then((result: any) => {
-      if (result) {
-        // Handle success
-      } else {
-        // Handle cancel
-      }
+
     });
   }
 
 
+  sendInvite() {
+    if (this.inviteEmail) {
+      const inviteData = {
+        email: this.inviteEmail,
+        timestamp: new Date(),
+      };
 
-  // // Function to open the action modal
-  // openActionModal(group: any) {
+      this.firestore.collection('invites').add(inviteData).then(() => {
+        console.log('Invite saved in Firebase');
+      });
+      this.inviteEmail = '';
+    } else {
+      console.log('Please enter a valid email');
+    }
+  }
 
-  //   console.log('group------------', group)
-  //   this.selectedGroup = group;  // Store the selected group
-  //   this.modalRef = this.modalService.open(this.actionModalTemplate, { centered: true, windowClass: 'custom-modal' }); // Open the modal
-  // }
-
-  // // Function to edit group
-  // editGroup() {
-  //   this.modalRef.close();  // Close the action modal
-  //   // You can now open another modal for editing, similar to how you handle group addition
-
-  //   this.addGroup(this.selectedGroup);
-  // }
+  openPaymentModal() {
 
 
-  // // Function to delete group
-  // deleteGroup() {
-  //   this.modalRef.close(); // Close the action modal
-  //   if (confirm('Are you sure you want to delete this group?')) {
-  //     this.dataService.deleteGroup(this.selectedGroup.id).subscribe(
-  //       response => {
-  //         console.log('Group deleted successfully');
-  //         // Refresh or update your list of groups after delete
-  //       },
-  //       error => {
-  //         console.error('Error while deleting group:', error);
-  //       }
-  //     );
-  //   }
-  // }
+    // console.log('this.allmemberNames&&&&&&&&&', this.allmemberNames)
+    const modalRef = this.modalService.open(PaymentModalComponent, { size: 'lg', centered: true });
+    modalRef.componentInstance.memberNames = this.memberNames.length > 0 ? this.memberNames : this.allmemberNames;
+    modalRef.componentInstance.groupName = this.selectedGroup.groupTitle ? this.selectedGroup.groupTitle : '';
+    modalRef.result.then(
+      (paymentData: any) => {
+        console.log('>>>>>>>>>>>Payment modal result<<<<<<<<<<<<', paymentData);
+      },
+      (dismissed) => {
+        console.log('Modal dismissed:', dismissed);
+      }
+    );
+  }
+
+
+
+  onGroupSelect(group: any): void {
+    if (group) {
+      this.selectView('group', group);
+    }
+  }
+  onFriendSelect(friend: any): void {
+    if (friend) {
+      this.selectView('friend', friend);
+    }
+  }
+
+
+
 }
-
 
 

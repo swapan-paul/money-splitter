@@ -1,4 +1,33 @@
-.text-d {
+.accordion-button {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
 
-    color: rgb(7, 89, 98);
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+.accordion-button.collapsed {
+    background-color: #e2e6ea;
+}
+
+.accordion-body {
+    background-color: #ffffff;
+    border-top: 1px solid #dee2e6;
+}
+
+.expense-title {
+    font-size: 1.2rem;
+}
+
+.badge {
+    margin-left: 18px;
+    padding-left: 17px;
+    padding-right: 17px;
+    font-size: 0.9rem;
+}
+
+.fw-bold {
+    color: blueviolet;
+    font-weight: 733 !important;
 }
