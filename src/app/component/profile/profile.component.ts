@@ -72,6 +72,11 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  closeModal() {
+    this.activeModal.dismiss('Close click');
+  }
+
+
 
   saveChanges() {
     if (this.selectedFile) {

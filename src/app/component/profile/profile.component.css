@@ -177,6 +177,21 @@ h2 {
     display: inline-block;
 }
 
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
 .profile-avatar {
     width: 150px;
     height: 150px;
@@ -336,6 +351,7 @@ h2 {
     z-index: 999;
     cursor: pointer;
     transition: background-color 0.3s ease;
+        margin-top: 95px;
 }
 
 .logout-btn:hover {
